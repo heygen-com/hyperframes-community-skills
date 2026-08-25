@@ -21,6 +21,7 @@ directory under `skills/` is independent and can be installed on its own.
 | Skill | What it does |
 | --- | --- |
 | [`p5-paint-animation`](skills/p5-paint-animation/) | Turns text, photos, and short clips into deterministic p5.js handwriting, paint-on, and living-painting animations. |
+| [`vox-explainer`](skills/vox-explainer/) | Builds 60–90 second, collage-style HyperFrames explainers from a topic, document, or link. |
 
 ## Install skills
 
