@@ -14,6 +14,14 @@ directory under `skills/` is independent and can be installed on its own.
 > permissions before using it. Repository review and automated checks reduce
 > risk, but they are not a security guarantee.
 
+## Available skills
+
+No community skills have been added yet. New skills will be listed here so the
+collection remains browseable without opening the `skills/` directory first.
+
+| Skill | What it does |
+| --- | --- |
+
 ## Install skills
 
 This repository uses the same

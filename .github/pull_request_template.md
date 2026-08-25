@@ -17,6 +17,7 @@
 ## Checklist
 
 - [ ] The skill is self-contained and its directory name matches `SKILL.md`.
+- [ ] New or renamed skills are linked in the README's **Available skills** table.
 - [ ] I read every instruction and script in the submitted skill.
 - [ ] I disclosed all dependencies, network access, credentials, costs, and side effects.
 - [ ] No secrets, private data, private endpoints, generated output, or opaque executables are included.

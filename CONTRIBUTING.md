@@ -47,6 +47,10 @@ The instructions should explain:
 Use relative links for files owned by the skill. An agent reading only that
 skill directory should have everything needed to follow it.
 
+Add new and renamed skills to the **Available skills** table in `README.md`.
+Link the skill name as `skills/<skill-name>/` and describe the concrete use case
+in one sentence. Remove the empty-catalog message when adding the first skill.
+
 ## Safety and quality requirements
 
 Pull requests will not be merged if they contain:

@@ -55,6 +55,10 @@ while IFS= read -r -d '' skill_dir; do
     fail "$skill_file must have a non-empty description"
   fi
 
+  if ! grep -Fq "(skills/$skill_name/)" README.md; then
+    fail "$skill_name must be linked in the README Available skills table"
+  fi
+
   while IFS= read -r large_file; do
     fail "files larger than 5 MiB are not allowed: ${large_file#./}"
   done < <(find "$skill_dir" -type f -size +5M -print)
