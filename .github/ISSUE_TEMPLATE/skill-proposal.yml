@@ -1,0 +1,41 @@
+name: Skill proposal
+description: Propose a focused HyperFrames community skill
+labels: ["enhancement"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Proposed skill name
+      description: Use a lowercase kebab-case name.
+      placeholder: my-specific-workflow
+    validations:
+      required: true
+  - type: textarea
+    id: use-case
+    attributes:
+      label: Use case
+      description: Who needs this skill, and what concrete workflow would it complete?
+    validations:
+      required: true
+  - type: textarea
+    id: existing
+    attributes:
+      label: Why existing skills are not enough
+      description: Link any related curated or community skills and explain the gap.
+    validations:
+      required: true
+  - type: textarea
+    id: trust-boundary
+    attributes:
+      label: Trust boundary
+      description: List commands, files, dependencies, network services, credentials, costs, and side effects.
+      placeholder: Write "None" for categories that do not apply.
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: Verification plan
+      description: How will contributors and reviewers test normal and failure paths safely?
+    validations:
+      required: true

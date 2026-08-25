@@ -1,5 +1,7 @@
 # HyperFrames Community Skills
 
+[![Validate community skills](https://github.com/heygen-com/hyperframes-community-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/heygen-com/hyperframes-community-skills/actions/workflows/validate.yml)
+
 A community-maintained collection of focused, one-off skills for
 [HyperFrames](https://github.com/heygen-com/hyperframes).
 
@@ -48,9 +50,8 @@ By default, `skills add` installs into the current project and prompts for the
 agents to target. Use its `--global`, `--agent`, and `--yes` options when you
 need a global or non-interactive install.
 
-For a private repository, the installer uses existing Git, GitHub CLI, or SSH
-authentication. Run `gh auth login` first if your machine does not already have
-access configured.
+This repository is public, so installation does not require GitHub
+authentication.
 
 ## Download without installing
 
@@ -58,7 +59,7 @@ To download one skill without installing it automatically:
 
 ```bash
 git clone --depth 1 --filter=blob:none --sparse \
-  git@github.com:heygen-com/hyperframes-community-skills.git
+  https://github.com/heygen-com/hyperframes-community-skills.git
 cd hyperframes-community-skills
 git sparse-checkout set skills/<skill-name>
 ```
@@ -69,7 +70,7 @@ To download the complete collection:
 
 ```bash
 git clone --depth 1 \
-  git@github.com:heygen-com/hyperframes-community-skills.git
+  https://github.com/heygen-com/hyperframes-community-skills.git
 ```
 
 To update a clone later, run `git pull --ff-only` inside it. Review incoming
@@ -106,6 +107,11 @@ Contributions are welcome when a skill is:
 All changes go through a pull request, code-owner review, structural validation,
 and secret scanning. See [CONTRIBUTING.md](CONTRIBUTING.md) for the full quality
 and safety bar.
+
+Use [GitHub Issues](https://github.com/heygen-com/hyperframes-community-skills/issues)
+for bug reports and skill proposals. Report security problems privately as
+described in [SECURITY.md](SECURITY.md), and follow our
+[Code of Conduct](CODE_OF_CONDUCT.md) when participating.
 
 ## Curated vs. community skills
 

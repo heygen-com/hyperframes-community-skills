@@ -1,0 +1,51 @@
+name: Bug report
+description: Report a reproducible problem with a community skill or this repository
+labels: ["bug"]
+body:
+  - type: input
+    id: skill
+    attributes:
+      label: Affected skill
+      description: Enter the skill directory name, or "repository" for shared infrastructure.
+      placeholder: p5-paint-animation
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: What happened?
+      description: Describe the actual and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include minimal inputs and exact commands, with secrets and private data removed.
+      placeholder: |
+        1. Install the skill with ...
+        2. Run ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Include your OS, agent, runtime versions, and relevant dependency versions.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Non-sensitive evidence
+      description: Paste logs or screenshots only after removing secrets, private URLs, and personal data.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Safety check
+      options:
+        - label: I removed credentials, private data, and private endpoints from this report.
+          required: true
+        - label: This is not an undisclosed security vulnerability.
+          required: true

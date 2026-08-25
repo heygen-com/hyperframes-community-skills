@@ -8,6 +8,8 @@ boundary.
 ## Before you start
 
 - Search the repository for an existing skill that covers the same workflow.
+- Search existing issues, and open a skill proposal before investing in a
+  substantial new skill.
 - Keep the skill self-contained. Do not add shared runtime code under `skills/`
   or at the repository root.
 - Confirm that you have the right to redistribute every dependency and asset.
@@ -73,6 +75,10 @@ Prefer standard tools over adding dependencies. If a network service is needed,
 name the service, the data sent to it, the credentials it uses, and whether it
 can incur cost.
 
+AI-assisted contributions are welcome, but the submitter remains responsible
+for every instruction and script. Do not submit behavior you have not read,
+understood, and tested.
+
 ## Test locally
 
 Run the repository validator:
@@ -88,8 +94,9 @@ data in test fixtures or evidence.
 
 ## Open a pull request
 
-Create a new branch from `master` and keep the pull request scoped to one skill
-or one coherent fix. In the pull request:
+Fork the repository, create a new branch from `master`, and open a pull request
+against this repository. Keep it scoped to one skill or one coherent fix. In
+the pull request:
 
 - explain the use case and why it belongs in the community collection;
 - enumerate commands, network destinations, credentials, costs, and side
@@ -101,4 +108,5 @@ or one coherent fix. In the pull request:
 All required checks must pass and a code owner must approve the exact head
 commit. Resolve review threads before merge. Do not push directly to `master`.
 
+By participating, you agree to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 Contributions are licensed under the repository's Apache 2.0 license.

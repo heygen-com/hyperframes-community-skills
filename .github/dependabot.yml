@@ -1,0 +1,7 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /skills/p5-paint-animation/scripts
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
