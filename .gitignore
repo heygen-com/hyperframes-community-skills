@@ -1,0 +1,57 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+!.env.*.example
+.npmrc
+.pypirc
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Operating systems and editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs and temporary files
+*.log
+*.tmp
+.cache/
+.tmp/
+tmp/
+temp/
+
+# JavaScript and TypeScript
+node_modules/
+.pnpm-store/
+.yarn/
+.next/
+.turbo/
+coverage/
+.nyc_output/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# Common build and generated output
+build/
+dist/
+out/
+output/
+outputs/
+renders/
+target/
+*.class
