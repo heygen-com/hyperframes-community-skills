@@ -8,20 +8,22 @@ boundary.
 ## Before you start
 
 - Search the repository for an existing skill that covers the same workflow.
-- Keep the skill self-contained. Do not add shared runtime code at the root.
+- Keep the skill self-contained. Do not add shared runtime code under `skills/`
+  or at the repository root.
 - Confirm that you have the right to redistribute every dependency and asset.
 - Do not submit credentials, customer data, private URLs, or generated output.
 
 ## Skill structure
 
-Create one lowercase kebab-case directory at the repository root:
+Create one lowercase kebab-case directory under `skills/`:
 
 ```text
-my-specific-workflow/
-├── SKILL.md
-├── scripts/       # optional
-├── references/    # optional
-└── assets/        # optional
+skills/
+└── my-specific-workflow/
+    ├── SKILL.md
+    ├── scripts/       # optional
+    ├── references/    # optional
+    └── assets/        # optional
 ```
 
 `SKILL.md` must begin with YAML frontmatter whose `name` exactly matches the

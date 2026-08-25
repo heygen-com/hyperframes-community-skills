@@ -7,6 +7,7 @@ cd "$repo_root"
 
 validation_failed=0
 skill_count=0
+skills_root="./skills"
 
 fail() {
   printf 'ERROR: %s\n' "$*" >&2
@@ -17,8 +18,16 @@ while IFS= read -r symlink; do
   fail "symlinks are not allowed: ${symlink#./}"
 done < <(find . -path ./.git -prune -o -type l -print)
 
+if [[ ! -d "$skills_root" ]]; then
+  fail "repository must contain a skills/ directory"
+fi
+
+while IFS= read -r shared_file; do
+  fail "files directly under skills/ are not allowed: ${shared_file#./}"
+done < <(find "$skills_root" -mindepth 1 -maxdepth 1 -type f ! -name '.gitkeep' -print)
+
 while IFS= read -r -d '' skill_dir; do
-  skill_name="${skill_dir#./}"
+  skill_name="$(basename "$skill_dir")"
   skill_file="$skill_dir/SKILL.md"
   skill_count=$((skill_count + 1))
 
@@ -71,7 +80,7 @@ while IFS= read -r -d '' skill_dir; do
       -iname '*.pem' -o -iname '*.pfx' \
     \) -print
   )
-done < <(find . -mindepth 1 -maxdepth 1 -type d ! -name '.*' -print0)
+done < <(find "$skills_root" -mindepth 1 -maxdepth 1 -type d ! -name '.*' -print0)
 
 if (( skill_count == 0 )); then
   printf 'No skills found yet; repository-level files are valid.\n'

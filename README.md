@@ -5,7 +5,7 @@ A community-maintained collection of focused, one-off skills for
 
 This repository is for useful skills built around a specific workflow, tool, or
 use case that do not belong in HyperFrames' curated public skill set. Each
-top-level directory is an independent skill and can be installed on its own.
+directory under `skills/` is independent and can be installed on its own.
 
 > [!CAUTION]
 > Community skills are not part of the curated HyperFrames distribution. A
@@ -14,23 +14,39 @@ top-level directory is an independent skill and can be installed on its own.
 > permissions before using it. Repository review and automated checks reduce
 > risk, but they are not a security guarantee.
 
-## Install a skill
+## Install skills
 
-Replace `<skill-name>` with the name of a top-level skill directory.
-
-### GitHub CLI
-
-With GitHub CLI 2.90 or later:
+This repository uses the same
+[`skills`](https://github.com/vercel-labs/skills) installer as HyperFrames.
+List the available skills without installing anything:
 
 ```bash
-gh auth login
-gh skill install heygen-com/hyperframes-community-skills <skill-name>
+npx skills add heygen-com/hyperframes-community-skills --list
 ```
 
-`gh auth login` is only required when you are not already authenticated or the
-repository requires access.
+### Install one skill
 
-### Sparse checkout
+Replace `<skill-name>` with the name of a directory under `skills/`:
+
+```bash
+npx skills add heygen-com/hyperframes-community-skills --skill <skill-name>
+```
+
+### Install all skills
+
+```bash
+npx skills add heygen-com/hyperframes-community-skills --all
+```
+
+By default, `skills add` installs into the current project and prompts for the
+agents to target. Use its `--global`, `--agent`, and `--yes` options when you
+need a global or non-interactive install.
+
+For a private repository, the installer uses existing Git, GitHub CLI, or SSH
+authentication. Run `gh auth login` first if your machine does not already have
+access configured.
+
+## Download without installing
 
 To download one skill without installing it automatically:
 
@@ -38,16 +54,12 @@ To download one skill without installing it automatically:
 git clone --depth 1 --filter=blob:none --sparse \
   git@github.com:heygen-com/hyperframes-community-skills.git
 cd hyperframes-community-skills
-git sparse-checkout set <skill-name>
+git sparse-checkout set skills/<skill-name>
 ```
 
-The skill will be at `hyperframes-community-skills/<skill-name>`. Copy or link
-that directory into the skills directory used by your agent.
+The skill will be at `hyperframes-community-skills/skills/<skill-name>`.
 
-## Download all skills
-
-Clone the repository into a directory your agent scans for skills, or clone it
-elsewhere and copy the skills you want:
+To download the complete collection:
 
 ```bash
 git clone --depth 1 \
@@ -55,23 +67,25 @@ git clone --depth 1 \
 ```
 
 To update a clone later, run `git pull --ff-only` inside it. Review incoming
-changes before making the updated skills available to an agent.
+changes before installing or copying the updated skills.
 
 ## Repository layout
 
 Every skill is self-contained:
 
 ```text
-<skill-name>/
-├── SKILL.md          # Required instructions and metadata
-├── scripts/          # Optional readable source code
-├── references/       # Optional supporting documentation
-└── assets/           # Optional small, redistributable assets
+skills/
+└── <skill-name>/
+    ├── SKILL.md          # Required instructions and metadata
+    ├── scripts/          # Optional readable source code
+    ├── references/       # Optional supporting documentation
+    └── assets/           # Optional small, redistributable assets
 ```
 
 Skill directory names use lowercase kebab-case and must match the `name` field
-in `SKILL.md`. There is no root skill and no shared runtime dependency between
-skills.
+in `SKILL.md`. This native `skills/` layout lets the installer discover the
+collection without a broad `--full-depth` scan. There is no root skill and no
+shared runtime dependency between skills.
 
 ## Contribute
 
