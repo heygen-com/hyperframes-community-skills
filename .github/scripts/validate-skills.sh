@@ -16,7 +16,7 @@ fail() {
 
 while IFS= read -r symlink; do
   fail "symlinks are not allowed: ${symlink#./}"
-done < <(find . -path ./.git -prune -o -type l -print)
+done < <(find . -path ./.git -prune -o -path '*/node_modules' -prune -o -type l -print)
 
 if [[ ! -d "$skills_root" ]]; then
   fail "repository must contain a skills/ directory"
@@ -61,12 +61,12 @@ while IFS= read -r -d '' skill_dir; do
 
   while IFS= read -r large_file; do
     fail "files larger than 5 MiB are not allowed: ${large_file#./}"
-  done < <(find "$skill_dir" -type f -size +5M -print)
+  done < <(find "$skill_dir" -path '*/node_modules' -prune -o -type f -size +5M -print)
 
   while IFS= read -r opaque_file; do
     fail "compiled or archived files are not allowed: ${opaque_file#./}"
   done < <(
-    find "$skill_dir" -type f \( \
+    find "$skill_dir" -path '*/node_modules' -prune -o -type f \( \
       -iname '*.7z' -o -iname '*.a' -o -iname '*.class' -o \
       -iname '*.dll' -o -iname '*.dylib' -o -iname '*.exe' -o \
       -iname '*.gz' -o -iname '*.jar' -o -iname '*.o' -o \
@@ -78,7 +78,7 @@ while IFS= read -r -d '' skill_dir; do
   while IFS= read -r secret_file; do
     fail "credential files are not allowed: ${secret_file#./}"
   done < <(
-    find "$skill_dir" -type f \( \
+    find "$skill_dir" -path '*/node_modules' -prune -o -type f \( \
       -name '.env' -o -name 'id_dsa' -o -name 'id_ed25519' -o \
       -name 'id_rsa' -o -iname '*.key' -o -iname '*.p12' -o \
       -iname '*.pem' -o -iname '*.pfx' \

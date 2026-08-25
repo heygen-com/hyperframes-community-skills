@@ -1,0 +1,11 @@
+{
+  "name": "p5-paint-animation-engine",
+  "private": true,
+  "type": "module",
+  "description": "Headless p5.brush render harnesses: still, paint-on animation, coherent video repaint",
+  "dependencies": {
+    "p5": "2.3.2",
+    "p5.brush": "2.2.1",
+    "puppeteer": "25.9.0"
+  }
+}

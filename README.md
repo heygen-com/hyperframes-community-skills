@@ -16,11 +16,9 @@ directory under `skills/` is independent and can be installed on its own.
 
 ## Available skills
 
-No community skills have been added yet. New skills will be listed here so the
-collection remains browseable without opening the `skills/` directory first.
-
 | Skill | What it does |
 | --- | --- |
+| [`p5-paint-animation`](skills/p5-paint-animation/) | Turns text, photos, and short clips into deterministic p5.js handwriting, paint-on, and living-painting animations. |
 
 ## Install skills
 
