@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Snell Roundhand"; src: local("Snell Roundhand"); }
+      @font-face { font-family: "Savoye LET"; src: local("Savoye LET"); }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; }
+      body { font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif; }
+
+      #bg { position: absolute; inset: 0; background: #000; }
+
+      #stage { position: absolute; inset: 0; perspective: 1600px; perspective-origin: 50% 46%; }
+      #scaleWrap { position: absolute; left: 50%; top: 50%; width: 780px; height: 492px;
+                   margin: -246px 0 0 -390px; transform: scale(1.5) translateZ(0); transform-style: preserve-3d; }
+      #slide, #squash, #tilt, #flip { position: absolute; inset: 0; transform-style: preserve-3d; }
+      #squash { transform-origin: 50% 100%; }
+      #card { position: absolute; inset: 0; transform-style: preserve-3d; }
+
+      #shadow { position: absolute; left: 50%; top: 50%; width: 860px; height: 120px; margin: 320px 0 0 -430px;
+                background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(0,0,0,.85), transparent 70%);
+                filter: blur(6px); }
+
+      .face { position: absolute; inset: 0; border-radius: 24px; overflow: hidden;
+              background: #000; border: 1px solid #2f3336; color: #e7e9ea;
+              backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+      .face.back { transform: rotateY(180deg); }
+
+      .sheen { position: absolute; top: -60%; left: -60%; width: 220%; height: 220%; pointer-events: none;
+               background: linear-gradient(315deg, transparent 38%, rgba(255,255,255,.05) 45%, rgba(255,255,255,.16) 50%, transparent 60%); }
+
+      .m { overflow: hidden; }
+      .ltr { display: inline-block; will-change: transform; min-width: 0.001px; }
+      .mi { display: inline-block; will-change: transform; }
+      .mib { display: block; will-change: transform; }
+
+      .sig { font-family: "Snell Roundhand", "Savoye LET", cursive; }
+      .num { font-variant-numeric: tabular-nums; display: inline-block; }
+
+      /* ---------- FRONT (Midnight refined) ---------- */
+      .front-pad { position: relative; padding: 34px 40px; height: 100%; }
+      .hdr { display: flex; align-items: center; gap: 16px; margin-bottom: 26px; }
+      .hdr-title { font-size: 24px; font-weight: 800; letter-spacing: .22em; }
+      .hdr-state { margin-left: auto; font-size: 15px; font-weight: 700; letter-spacing: .18em; color: #1D9BF0; }
+      .cols { display: flex; gap: 32px; }
+      .photo-wrap { width: 190px; height: 238px; border-radius: 14px; overflow: hidden; border: 2px solid #2f3336; }
+      .photo-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .licno { font-size: 20px; font-weight: 700; color: #1D9BF0; letter-spacing: .06em; }
+      .bigname { font-size: 42px; font-weight: 800; margin: 6px 0 22px; }
+      .fields { display: grid; grid-template-columns: auto auto; gap: 10px 28px; }
+      .f label { font-size: 15px; font-weight: 800; letter-spacing: .14em; display: block; margin-bottom: 2px; color: #7c8186; }
+      .f b { font-size: 24px; font-weight: 700; }
+      .bio { position: absolute; left: 40px; bottom: 26px; font-size: 14px; color: #7c8186; letter-spacing: .1em; }
+      .front-sig { font-size: 40px; margin-top: 10px; text-align: center; width: 270px; margin-left: -40px; white-space: nowrap; }
+
+      /* ---------- BACK (B5 fine print) ---------- */
+      .stripe { background: #16181c; height: 64px; margin-top: 30px; border-top: 1px solid #2f3336; border-bottom: 1px solid #2f3336; }
+      .back-pad { padding: 22px 42px 30px; display: flex; flex-direction: column; height: calc(100% - 94px); }
+      .terms-hdr { font-size: 13px; font-weight: 800; letter-spacing: .22em; color: #7c8186; }
+      .terms { font-size: 15.5px; line-height: 1.75; color: #a9adb1; margin-top: 12px; column-count: 2; column-gap: 34px; }
+      .back-foot { margin-top: auto; display: flex; align-items: flex-end; gap: 26px; }
+      .bc { display: flex; align-items: stretch; height: 56px; }
+      .bc i { display: block; }
+      .bc-cap { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; letter-spacing: .2em; color: #7c8186; margin-top: 8px; }
+      .back-sig-box { padding: 6px 10px; }
+      .back-sig { font-size: 44px; color: #e7e9ea; white-space: nowrap; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="x-license" data-start="0" data-duration="10.35" data-width="1920" data-height="1080" data-fps="60">
+      <div id="bg"></div>
+      <canvas id="dots" width="1920" height="1080" data-layout-ignore="" style="position:absolute; inset:0; opacity:0"></canvas>
+
+      <svg width="0" height="0" style="position:absolute">
+        <defs>
+          <path id="xg" d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.657l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231 5.451-6.231zm-1.161 17.52h1.833L7.084 4.126H5.117l11.966 15.644z" />
+          <pattern id="guillw" width="120" height="40" patternUnits="userSpaceOnUse">
+            <path d="M0 20 Q30 -10 60 20 T120 20" fill="none" stroke="#fff" stroke-width="1" opacity=".13" />
+            <path d="M0 20 Q30 50 60 20 T120 20" fill="none" stroke="#fff" stroke-width="1" opacity=".13" />
+          </pattern>
+        </defs>
+      </svg>
+
+      <div id="shadow"></div>
+
+      <div id="stage">
+        <div id="scaleWrap">
+          <div id="slide">
+            <div id="squash">
+            <div id="tilt">
+              <div id="flip">
+                <div id="card">
+
+                  <!-- ============ FRONT ============ -->
+                  <div class="face front" id="faceFront">
+                    <svg style="position:absolute; inset:0" width="780" height="492"><rect width="780" height="492" fill="url(#guillw)" /></svg>
+                    <svg viewBox="0 0 24 24" width="340" height="340" style="position:absolute; right:-60px; bottom:-70px; opacity:.07; fill:#fff"><use href="#xg" /></svg>
+                    <div class="front-pad">
+                      <div class="hdr">
+                        <div class="m"><span class="mi rv"><svg viewBox="0 0 24 24" width="40" height="40" style="fill:#fff; display:block"><use href="#xg" /></svg></span></div>
+                        <div class="m hdr-title"><span class="mi rv lt">POSTING LICENSE</span></div>
+                        <div class="m hdr-state" style="margin-left:auto"><span class="mi rv lt">THE EVERYTHING STATE</span></div>
+                      </div>
+                      <div class="cols">
+                        <div>
+                          <div class="photo-wrap" id="photoWrap"><img src="assets/avatar.jpg" alt=""></div>
+                          <div class="m front-sig"><span class="mi rv sig">{{NAME_SIG}}</span></div>
+                        </div>
+                        <div style="flex:1">
+                          <div class="m licno"><span class="mi rv lt">LIC № @{{HANDLE_UPPER}}</span></div>
+                          <div class="m bigname"><span class="mi rv lt">{{NAME_BIG}}</span></div>
+                          <div class="fields">
+                            <div class="f m"><span class="mi rv"><label>FOLLOWERS</label><b class="num" id="cFlw" style="color:#1D9BF0">0</b></span></div>
+                            <div class="f m"><span class="mi rv"><label>JOINED</label><b>{{JOINED}}</b></span></div>
+                            <div class="f m"><span class="mi rv"><label>FOLLOWING</label><b class="num" id="cFlwg">0</b></span></div>
+                            <div class="f m"><span class="mi rv"><label>POSTS</label><b class="num" id="cPosts">0</b></span></div>
+                            <div class="f m"><span class="mi rv"><label>CLASS</label><b>X</b></span></div>
+                            <div class="f m"><span class="mi rv"><label>RESTRICTIONS</label><b>NONE</b></span></div>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="bio m"><span class="mi rv lt">{{BIO_UPPER}}</span></div>
+                    </div>
+                    <div class="sheen" id="sheenFront" data-layout-allow-overflow=""></div>
+                  </div>
+
+                  <!-- ============ BACK (B5) ============ -->
+                  <div class="face back" id="faceBack">
+                    <div class="m"><div class="mib bk"><div class="stripe"></div></div></div>
+                    <div class="back-pad">
+                      <div class="m terms-hdr"><span class="mi bk">TERMS OF OPERATION — ABRIDGED</span></div>
+                      <div class="m"><div class="mib bk terms" data-layout-allow-overlap="">
+                        1. Holder agrees the timeline is driven at their own risk. 2. Follower count ({{FOLLOWERS_FMT}}) supersedes date of birth for all legal purposes. 3. This license does not expire; it simply gets fewer impressions. 4. Holder must yield to breaking news and merge politely into trending topics. 5. Drafts left unposted for 90+ days revert to the state. 6. In the event of a ratio, remain calm and do not delete the original post. 7. Valid in all jurisdictions of the everything app.
+                      </div></div>
+                      <div class="back-foot">
+                        <div style="flex:1">
+                          <div class="bc" id="barcode"></div>
+                          <div class="m bc-cap"><span class="mi bk">@{{HANDLE_UPPER}} · CLASS X · ISS {{ISS}}</span></div>
+                        </div>
+                        <div class="back-sig-box" id="sigMask"><div class="back-sig sig">{{NAME_SIG}}</div></div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // deterministic barcode (seeded LCG, no Math.random)
+      (function () {
+        var s = 4242, bars = "";
+        var rnd = function () { s = (s * 1103515245 + 12345) & 0x7fffffff; return s / 0x7fffffff; };
+        for (var i = 0; i < 46; i++) {
+          var w = 2 + Math.floor(rnd() * 4);
+          bars += '<i class="bar" style="width:' + w + 'px;' + (i % 2 === 0 ? 'background:#e7e9ea' : '') + '"></i>';
+        }
+        document.getElementById("barcode").innerHTML = bars;
+      })();
+
+      // letter-by-letter: split marked text into inline-block letter spans
+      document.querySelectorAll(".lt").forEach(function (el) {
+        var text = el.textContent; el.textContent = "";
+        for (var i = 0; i < text.length; i++) {
+          var sp = document.createElement("span");
+          sp.className = "ltr";
+          sp.setAttribute("data-layout-allow-overlap", "");
+          sp.textContent = text[i] === " " ? "\u00A0" : text[i];
+          el.appendChild(sp);
+        }
+      });
+
+      /* ---------- Dot Matrix ground (Originkit port from last30days, X-blue palette).
+         uTime is causal: drifts in with the card's entry, HOLDS, churns on the flip,
+         settles again. Single-pass WebGL2, deterministic (uTime is pure f(t)). ---------- */
+      var dotsCanvas = document.getElementById("dots");
+      var DOTS = (function () {
+        var gl2 = dotsCanvas.getContext("webgl2", { alpha: true, premultipliedAlpha: false });
+        if (!gl2) return null;
+        var vs = "#version 300 es\nin vec2 p; void main(){ gl_Position = vec4(p,0.,1.); }";
+        var fs = "#version 300 es\n" +
+          "precision highp float; uniform float uTime; out vec4 fragColor;\n" +
+          "const vec2 uRes = vec2(1920.0, 1080.0);\n" +
+          "vec3 mod289(vec3 x){ return x - floor(x * (1.0/289.0)) * 289.0; }\n" +
+          "vec4 mod289(vec4 x){ return x - floor(x * (1.0/289.0)) * 289.0; }\n" +
+          "vec4 permute(vec4 x){ return mod289(((x*34.0)+1.0)*x); }\n" +
+          "vec4 taylorInvSqrt(vec4 r){ return 1.79284291400159 - 0.85373472095314 * r; }\n" +
+          "float snoise(vec3 v){\n" +
+          "  const vec2 C = vec2(1.0/6.0, 1.0/3.0); const vec4 D = vec4(0.0,0.5,1.0,2.0);\n" +
+          "  vec3 i = floor(v + dot(v, C.yyy)); vec3 x0 = v - i + dot(i, C.xxx);\n" +
+          "  vec3 g = step(x0.yzx, x0.xyz); vec3 l = 1.0 - g;\n" +
+          "  vec3 i1 = min(g.xyz, l.zxy); vec3 i2 = max(g.xyz, l.zxy);\n" +
+          "  vec3 x1 = x0 - i1 + C.xxx; vec3 x2 = x0 - i2 + C.yyy; vec3 x3 = x0 - D.yyy;\n" +
+          "  i = mod289(i);\n" +
+          "  vec4 p = permute(permute(permute(i.z + vec4(0.0,i1.z,i2.z,1.0)) + i.y + vec4(0.0,i1.y,i2.y,1.0)) + i.x + vec4(0.0,i1.x,i2.x,1.0));\n" +
+          "  float n_ = 0.142857142857; vec3 ns = n_ * D.wyz - D.xzx;\n" +
+          "  vec4 j = p - 49.0 * floor(p * ns.z * ns.z);\n" +
+          "  vec4 x_ = floor(j * ns.z); vec4 y_ = floor(j - 7.0 * x_);\n" +
+          "  vec4 x = x_ * ns.x + ns.yyyy; vec4 y = y_ * ns.x + ns.yyyy;\n" +
+          "  vec4 h = 1.0 - abs(x) - abs(y);\n" +
+          "  vec4 b0 = vec4(x.xy, y.xy); vec4 b1 = vec4(x.zw, y.zw);\n" +
+          "  vec4 s0 = floor(b0)*2.0 + 1.0; vec4 s1 = floor(b1)*2.0 + 1.0; vec4 sh = -step(h, vec4(0.0));\n" +
+          "  vec4 a0 = b0.xzyw + s0.xzyw*sh.xxyy; vec4 a1 = b1.xzyw + s1.xzyw*sh.zzww;\n" +
+          "  vec3 p0 = vec3(a0.xy,h.x); vec3 p1 = vec3(a0.zw,h.y); vec3 p2 = vec3(a1.xy,h.z); vec3 p3 = vec3(a1.zw,h.w);\n" +
+          "  vec4 norm = taylorInvSqrt(vec4(dot(p0,p0), dot(p1,p1), dot(p2,p2), dot(p3,p3)));\n" +
+          "  p0 *= norm.x; p1 *= norm.y; p2 *= norm.z; p3 *= norm.w;\n" +
+          "  vec4 m = max(0.6 - vec4(dot(x0,x0), dot(x1,x1), dot(x2,x2), dot(x3,x3)), 0.0); m = m * m;\n" +
+          "  return 42.0 * dot(m*m, vec4(dot(p0,x0), dot(p1,x1), dot(p2,x2), dot(p3,x3)));\n" +
+          "}\n" +
+          "vec3 hsv2rgb(vec3 c){ vec4 K = vec4(1.0, 2.0/3.0, 1.0/3.0, 3.0);\n" +
+          "  vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);\n" +
+          "  return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y); }\n" +
+          "void main(){\n" +
+          "  float cell = 16.4; vec2 pix = gl_FragCoord.xy;\n" +
+          "  vec2 cellCenter = (floor(pix / cell) + 0.5) * cell;\n" +
+          "  vec2 uv = cellCenter / uRes;\n" +
+          "  float aspect = uRes.x / uRes.y;\n" +
+          "  vec2 uvA = (uv - 0.5) * vec2(aspect, 1.0) + 0.5;\n" +
+          "  float hue = abs(snoise(vec3(uvA * 0.3, uTime * 0.3)));\n" +
+          "  vec3 rainbow = hsv2rgb(vec3(hue, 1.0, 1.0));\n" +
+          "  float gray = 0.3*rainbow.r + 0.59*rainbow.g + 0.11*rainbow.b;\n" +
+          "  gray = pow(clamp(gray, 0.0001, 1.0), 1.68);\n" +
+          "  float g2 = clamp(gray + 0.5, 0.0, 1.0);\n" +
+          "  vec2 cellUV = fract(pix / cell) - 0.5;\n" +
+          "  float dist = length(cellUV);\n" +
+          "  float radius = g2 * 0.5;\n" +
+          "  float aa = fwidth(dist) + 1e-4;\n" +
+          "  float mark = 1.0 - smoothstep(radius - aa, radius + aa, dist);\n" +
+          "  vec3 W = vec3(1.0), O = vec3(0.114, 0.608, 0.941), B = vec3(0.0);\n" +
+          "  float scaled = g2 * 2.0;\n" +
+          "  int i0 = int(clamp(floor(scaled), 0.0, 1.0)); float f = scaled - float(i0);\n" +
+          "  vec3 dotCol = i0 == 0 ? mix(W, O, f) : mix(O, B, clamp(f, 0.0, 1.0));\n" +
+          "  fragColor = vec4(dotCol, mark);\n" +
+          "}";
+        function sh(type, src) {
+          var o = gl2.createShader(type); gl2.shaderSource(o, src); gl2.compileShader(o);
+          return o;
+        }
+        var prog = gl2.createProgram();
+        gl2.attachShader(prog, sh(gl2.VERTEX_SHADER, vs));
+        gl2.attachShader(prog, sh(gl2.FRAGMENT_SHADER, fs));
+        gl2.linkProgram(prog);
+        if (!gl2.getProgramParameter(prog, gl2.LINK_STATUS)) return null;
+        gl2.useProgram(prog);
+        var buf = gl2.createBuffer();
+        gl2.bindBuffer(gl2.ARRAY_BUFFER, buf);
+        gl2.bufferData(gl2.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl2.STATIC_DRAW);
+        var loc = gl2.getAttribLocation(prog, "p");
+        gl2.enableVertexAttribArray(loc);
+        gl2.vertexAttribPointer(loc, 2, gl2.FLOAT, false, 0, 0);
+        var uT = gl2.getUniformLocation(prog, "uTime");
+        gl2.viewport(0, 0, 1920, 1080);
+        gl2.enable(gl2.BLEND);
+        gl2.blendFunc(gl2.SRC_ALPHA, gl2.ONE_MINUS_SRC_ALPHA);
+        var lastU = -1;
+        return function draw(u) {
+          if (u === lastU) return; lastU = u;
+          gl2.uniform1f(uT, u);
+          gl2.clearColor(0, 0, 0, 0);
+          gl2.clear(gl2.COLOR_BUFFER_BIT);
+          gl2.drawArrays(gl2.TRIANGLES, 0, 3);
+        };
+      })();
+      function clampP(t, a, b) { var v = (t - a) / (b - a); return v < 0 ? 0 : v > 1 ? 1 : v; }
+      function eio(p) { return p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2; }
+      function eo(p) { return 1 - (1 - p) * (1 - p); }
+      // uTime: continuous slow drift from the moment the ground ignites, with a surge on the flip
+      function dotU(t) { var live = t > 0.35 ? t - 0.35 : 0; return 0.22 * live + 2.8 * eio(clampP(t, 6.48, 7.45)); }
+      // opacity: fades in with the slide, powers down after the card leaps out
+      function dotA(t) { return eo(clampP(t, 0.35, 1.3)) * (1 - eo(clampP(t, 9.95, 10.3))); }
+
+      var tl = gsap.timeline({ paused: true, defaults: { overwrite: "auto" } });
+
+      // dots driver: one linear tween over the full duration; state is pure f(t)
+      var dotsLA = -1, dotClock = { t: 0 };
+      tl.fromTo(dotClock, { t: 0 }, { t: 10.35, duration: 10.35, ease: "none",
+        onUpdate: function () {
+          var t = dotClock.t, a = dotA(t);
+          if (a !== dotsLA) { dotsCanvas.style.opacity = a.toFixed(3); dotsLA = a; }
+          if (a > 0 && DOTS) DOTS(dotU(t));
+        } }, 0);
+
+      // face gating: the flip (back.out(1.6), 0.9s from 2.48) crosses 90° at ~2.60s.
+      // backface-visibility already hides the reverse face; these explicit gates keep
+      // the layout auditor and any compositing path honest about which face is live.
+      tl.fromTo("#faceBack", { autoAlpha: 0 }, { autoAlpha: 0, duration: 6.6, ease: "none" }, 0);
+      tl.set("#faceBack", { autoAlpha: 1 }, 6.6);
+      tl.set("#faceFront", { autoAlpha: 0 }, 6.6);
+
+      // ---------- Phase A: entry (0 – 1.15) ----------
+      // slide-up with overshoot settle; card leans back and straightens (overlapped stage)
+      tl.fromTo("#stage", { y: 760 }, { y: 0, duration: 1.15, ease: "back.out(1.3)" }, 0);
+      tl.fromTo("#shadow", { opacity: 0, scaleX: 1.45, scaleY: 1.45 },
+                { opacity: 0.6, scaleX: 1, scaleY: 1, duration: 1.05, ease: "back.out(1.3)" }, 0.1);
+
+      // front text waterfall — letter-by-letter upward reveals, mid-slide, cascading
+      // by reading order; counters and the logo rise as whole units in the same cascade
+      document.querySelectorAll(".rv").forEach(function (line, i) {
+        var base = 0.35 + i * 0.045;
+        var letters = line.querySelectorAll(".ltr");
+        if (letters.length) {
+          tl.fromTo(letters, { yPercent: 115 }, { yPercent: 0, duration: 0.5, ease: "power4.out", stagger: 0.014 }, base);
+          line.querySelectorAll("b:not(.lt)").forEach(function (whole) {
+            tl.fromTo(whole, { yPercent: 115 }, { yPercent: 0, duration: 0.5, ease: "power4.out" }, base + 0.1);
+          });
+        } else {
+          tl.fromTo(line, { yPercent: 115 }, { yPercent: 0, duration: 0.55, ease: "power4.out" }, base);
+        }
+      });
+      // photo: wipe up in the same cascade
+      tl.fromTo("#photoWrap", { clipPath: "inset(100% 0% 0% 0%)" },
+                { clipPath: "inset(0% 0% 0% 0%)", duration: 0.6, ease: "power4.out" }, 0.42);
+
+      // ---------- Phase B: counters (1.45 – 2.25) ----------
+      var elFlw = document.getElementById("cFlw"),
+          elFlwg = document.getElementById("cFlwg"),
+          elPosts = document.getElementById("cPosts");
+      var nFlw = { v: 0 }, nFlwg = { v: 0 }, nPosts = { v: 0 };
+      function fmt(n) { return Math.round(n).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+      tl.fromTo(nFlw, { v: 0 }, { v: {{FOLLOWERS}}, duration: 0.8, ease: "power2.out",
+        onUpdate: function () { elFlw.textContent = fmt(nFlw.v); } }, 1.45);
+      tl.fromTo(nFlwg, { v: 0 }, { v: {{FOLLOWING}}, duration: 0.7, ease: "power2.out",
+        onUpdate: function () { elFlwg.textContent = fmt(nFlwg.v); } }, 1.52);
+      tl.fromTo(nPosts, { v: 0 }, { v: {{POSTS}}, duration: 0.73, ease: "power2.out",
+        onUpdate: function () { elPosts.textContent = fmt(nPosts.v); } }, 1.52);
+
+
+      // front push: the same slow 1 -> 1.05, igniting while the slide is still landing,
+      // so the entry hands off into it and the tilt ignites inside it (keyframe-overlap)
+      tl.fromTo("#card", { scale: 1 }, { scale: 1.05, duration: 1.5, ease: "none" }, 1.0);
+
+      // ---------- Phase C: tilt, bottom-right corner toward camera (2.05 – 2.75),
+      // then a slow continued deepening through the long hold so the card never dead-stops ----------
+      tl.fromTo("#tilt", { rotationX: 0, rotationY: 0 },
+                { rotationX: 14, rotationY: -12, duration: 0.7, ease: "power2.inOut" }, 2.05);
+      tl.fromTo("#tilt", { rotationX: 14, rotationY: -12 },
+                { rotationX: 19, rotationY: -17, duration: 4.0, ease: "power1.inOut", immediateRender: false }, 2.75);
+      // the ONE glimmer: caused by the tilt, sweeping diagonally bottom-right -> top-left
+      tl.fromTo("#sheenFront", { xPercent: 90, yPercent: 90 },
+                { xPercent: -90, yPercent: -90, duration: 3.0, ease: "power2.inOut" }, 2.05);
+
+      // ---------- Phase D: flip at 6.48, ignited while the tilt drift is still live ----------
+      // overshoots past 180 then cushions back (back.out)
+      tl.fromTo("#flip", { rotationY: 0 }, { rotationY: 180, duration: 0.9, ease: "back.out(1.6)" }, 6.48);
+      // scale reset 1.05 -> 1 hidden inside the flip rotation (the back push restarts from 1)
+      tl.fromTo("#card", { scale: 1.05 }, { scale: 1, duration: 0.6, ease: "power1.inOut", immediateRender: false }, 6.55);
+      // tilt returns during the flip so the composite arcs, never stops
+      tl.fromTo("#tilt", { rotationX: 19, rotationY: -17 },
+                { rotationX: 0, rotationY: 0, duration: 0.63, ease: "power2.inOut", immediateRender: false }, 6.75);
+      // landing shadow reaction (same-frame with the cushion settle region)
+      tl.fromTo("#shadow", { opacity: 0.6 }, { opacity: 0.42, duration: 0.5, ease: "power1.inOut", immediateRender: false }, 6.6);
+      tl.fromTo("#shadow", { opacity: 0.42 }, { opacity: 0.6, duration: 0.45, ease: "power1.out", immediateRender: false }, 7.15);
+
+      // ---------- Phase E: back reveals + signature write-on (6.72 – 8.2) ----------
+      tl.fromTo(".bk", { yPercent: 115 }, { yPercent: 0, duration: 0.45, ease: "power4.out", stagger: 0.06 }, 6.72);
+      tl.fromTo(".bar", { scaleY: 0, transformOrigin: "50% 100%" },
+                { scaleY: 1, duration: 0.32, ease: "power3.out", stagger: 0.006 }, 6.92);
+      tl.fromTo("#sigMask", { clipPath: "inset(0% 100% 0% 0%)" },
+                { clipPath: "inset(0% 0% 0% 0%)", duration: 0.85, ease: "power1.inOut" }, 7.35);
+
+      // back side: a very slow push, 1 -> 1.05, running from the flip settle straight
+      // into the crouch so the card never sits dead and the jump inherits its motion
+      tl.fromTo("#card", { scale: 1 }, { scale: 1.05, duration: 2.4, ease: "none", immediateRender: false }, 7.3);
+
+      // hold 8.2 – 9.6 (reading time on the fine print), then the 30-days card exit:
+      // anticipation crouch (scaleY 0.93, bottom edge pinned) -> power4.in leap out the top
+      tl.fromTo("#squash", { scaleY: 1 }, { scaleY: 0.7, duration: 0.16, ease: "power2.inOut", transformOrigin: "50% 100%" }, 9.56);
+      tl.fromTo("#squash", { scaleY: 0.7 }, { scaleY: 1.08, duration: 0.13, ease: "power2.out", transformOrigin: "50% 100%", immediateRender: false }, 9.72);
+      tl.fromTo("#stage", { y: 0 }, { y: -1750, duration: 0.215, ease: "power4.in", immediateRender: false }, 9.674);
+      tl.fromTo("#shadow", { opacity: 0.6, scaleX: 1, scaleY: 1 },
+                { opacity: 0, scaleX: 1.35, scaleY: 1.35, duration: 0.18, ease: "power2.in", immediateRender: false }, 9.69);
+      // the ground powers down after the leap — the film closes on black (dotA handles it)
+
+      tl.seek(0);
+      window.__timelines["x-license"] = tl;
+    </script>
+  </body>
+</html>
