@@ -1,0 +1,51 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<style>
+  /* ===== LOCKED RIG — do not edit this block. Geometry is measured from the plate. ===== */
+  html,body{margin:0;background:#000;font-family:-apple-system,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+  #root{position:relative;width:1448px;height:1086px;overflow:hidden;background:#000}
+  #cam{position:absolute;inset:0;width:1448px;height:1086px;transform-origin:50% 50%}
+  #plate{position:absolute;inset:0;width:1448px;height:1086px;background:url(assets/plate.png) 0 0/1448px 1086px no-repeat}
+  .screen{position:absolute;top:105px;height:849px;overflow:hidden;background:#000}
+  #screen-left{left:223px;width:495px;border-radius:56px 12px 12px 56px}
+  #screen-right{left:724px;width:498px;border-radius:12px 56px 56px 12px}
+  .content{position:absolute;inset:0;overflow:hidden}
+  /* ===== END LOCKED RIG ===== */
+
+  /* Your screen styles go below. Everything inside .content is a normal DOM viewport:
+     left = 495×849, right = 498×849. Position against those sizes, not the 1448×1086 root. */
+  /*__SCREEN_STYLES__*/
+</style></head>
+<body>
+<div id="root" data-composition-id="__COMPOSITION_ID__" data-duration="__DURATION__" data-fps="30" data-width="1448" data-height="1086">
+<div id="cam">
+  <div id="plate"></div>
+
+  <div id="screen-left" class="screen"><div class="content">
+    <!--__SCREEN_LEFT__-->
+  </div></div>
+
+  <div id="screen-right" class="screen"><div class="content">
+    <!--__SCREEN_RIGHT__-->
+  </div></div>
+</div>
+</div>
+
+<script>
+(() => {
+  const tl = gsap.timeline({ paused: true });
+  const DUR = __DURATION__;
+
+  // Camera: one slow push with intent across the whole clip (motion-doctrine: no idle wobble; a
+  // monotonic push is allowed, a sine "breathe" is not). Keep or remove; do not loop it.
+  tl.fromTo('#cam', { scale: 1.0 }, { scale: 1.045, duration: DUR, ease: 'power1.inOut' }, 0);
+
+  // Your screen animation goes below. Both screens share this ONE timeline (HyperFrames
+  // requires exactly one registered timeline per composition).
+  /*__SCREEN_TIMELINE__*/
+
+  window.__timelines['__COMPOSITION_ID__'] = tl;
+})();
+</script>
+</body></html>

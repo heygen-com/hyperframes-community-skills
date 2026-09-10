@@ -20,6 +20,7 @@ directory under `skills/` is independent and can be installed on its own.
 
 | Skill | What it does |
 | --- | --- |
+| [`duo`](skills/duo/) | Composites two HTML screens into a locked photo plate of hands holding an open foldable phone for side-by-side comparison and meme videos. |
 | [`p5-paint-animation`](skills/p5-paint-animation/) | Turns text, photos, and short clips into deterministic p5.js handwriting, paint-on, and living-painting animations. |
 | [`vox-explainer`](skills/vox-explainer/) | Builds 60–90 second, collage-style HyperFrames explainers from a topic, document, or link. |
 | [`x-posting-license`](skills/x-posting-license/) | Renders a 10s animated "posting license" ID-card video for any X profile from a locked composition template. |
