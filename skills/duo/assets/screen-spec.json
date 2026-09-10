@@ -1,0 +1,61 @@
+{
+ "source": {
+  "tweet": "https://x.com/A_Kapustin/status/2097769962936868872",
+  "author": "@A_Kapustin",
+  "text": "finally",
+  "image": "https://pbs.twimg.com/media/HRzGqR9aQAAGPNP.jpg?name=orig",
+  "size": [
+   1448,
+   1086
+  ],
+  "type": "still photo \u2014 the tweet has no video",
+  "note": "Photo posted publicly on X by @A_Kapustin; screens blanked for template use."
+ },
+ "screens": {
+  "left": {
+   "rect": {
+    "x": 223,
+    "y": 105,
+    "w": 495,
+    "h": 849
+   },
+   "outer_corner_radius_px": 56,
+   "hinge_corner_radius_px": 12,
+   "original_content": "ChatGPT chat",
+   "bg": "#f6f6f7"
+  },
+  "right": {
+   "rect": {
+    "x": 724,
+    "y": 105,
+    "w": 498,
+    "h": 849
+   },
+   "outer_corner_radius_px": 56,
+   "hinge_corner_radius_px": 12,
+   "original_content": "Claude chat",
+   "bg": "#fbf6f0"
+  }
+ },
+ "hinge": {
+  "x": 719,
+  "w": 5,
+  "color": "rgb(130,133,142)"
+ },
+ "files": {
+  "plate": "assets/plate.png (screens blanked; hinge divider and bezel are original pixels)",
+  "preview": "assets/plate-preview.jpg"
+ },
+ "notes": "Geometry measured 9/10 (v3): screens are rounded rects, outer r=56, hinge-side r=12; hinge divider is the plate's own pixels x719-723. Masks are exact rounded rects (no morphology).",
+ "status_bar": {
+  "left": {
+   "text": "9:41",
+   "x": 44,
+   "y": 18
+  },
+  "right": {
+   "wifi_battery_right_inset": 40,
+   "y": 18
+  }
+ }
+}
