@@ -26,10 +26,11 @@ animation.
 ## Requirements and side effects (complete list)
 
 - **Tools:**
-  - Node 18+ and the HyperFrames CLI via `npx hyperframes@latest`, which downloads from `registry.npmjs.org`.
+  - Node 22+ and the HyperFrames CLI pinned to the tested version, `npx hyperframes@0.8.62` (downloads from
+    `registry.npmjs.org`). Use that exact version for every command below.
   - `ffmpeg` on PATH.
   - Python 3 with `fonttools`, `brotli`, `numpy`, `pillow`.
-- **Matte:** `npx hyperframes remove-background` runs locally. On first run it downloads its person-segmentation
+- **Matte:** `npx hyperframes@0.8.62 remove-background` runs locally. On first run it downloads its person-segmentation
   model (~170 MB) to `~/.cache/hyperframes/`.
 - **Render time:** compositions load GSAP 3.14.2 from `cdn.jsdelivr.net` at preview/render time.
 - **Word clock:** any word-level transcriber the user already runs locally. Onset accuracy matters; plain Whisper
@@ -48,6 +49,8 @@ animation.
    - `plate-tall.mp4`: reflect-padded 240 px each side, 480 px top, 240 px bottom, so whips, trucks and pull-backs
      never show an edge.
    - `person.webm`: the alpha matte, same frames.
+   - The script then checks the plate and matte against the portion (size, frame rate, frame count) and fails on
+     any mismatch.
 2. **Word clock.** Word timings for the portion, in seconds from its start.
 3. **Fonts.** Pick 2–3 roles (caption / hero / ring), then
    `python3 scripts/font-metrics.py assets/metrics.js key=font.woff2[@wght=…,opsz=…] …`.
@@ -121,7 +124,7 @@ Pick 4–6 beats. Split each spoken clause into its own group.
 
 ## Verify
 
-1. `npx hyperframes check . --no-contrast`. The ghost layers trip the WCAG contrast check; the whip and wipe seams
+1. `npx hyperframes@0.8.62 check . --no-contrast`. The ghost layers trip the WCAG contrast check; the whip and wipe seams
    are overlapping by design.
 2. In the preview page, paste `scripts/frame-bounds.js` and run `__frameBounds(0, dur)`.
    - It must return `[]`: no group outside the frame for 5+ steps while visible.
@@ -130,7 +133,8 @@ Pick 4–6 beats. Split each spoken clause into its own group.
    - Flat words measure as one box (descenders flag false positives). An italic f's overhang reads negative. Words on
      opposite sides of the wipe band both show.
 4. Word gaps: the rendered gap between words ≈ one space advance.
-5. Snapshot every beat, render at `--crf 12`, and check full-resolution frames per beat.
+5. Snapshot every beat, render with `npx hyperframes@0.8.62 render . --crf 12`, and check full-resolution frames per
+   beat.
 
 ## Limits
 
