@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<!--
+  Worked example: the complete reference film (1440x1080, 19.2 s) — whip-in punch-in with captions behind the speaker,
+  parallax truck, body wipe, tilted 3D ring, fly-through phrases at depth, turning list ring, push finale, finish pass.
+  Asset names are the original project's: plate = g1-plate-tall.mp4 (top-padded), matte = g1-person-alpha-full.webm,
+  audio = g1-hero.mp4. `window.O2O` here = assets/kit/tables.js (camA, camB, wipe, ENTRY, RING_ENTRY, DR) + the Inter / Inter
+  Tight advance tables that scripts/font-metrics.py now generates (O2O.adv == CAM3D_METRICS.adv). Runs unchanged on
+  assets/kit/cam3d.js (defaults: 1440x1080, Inter baseline).
+-->
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1440, height=1080">
+<title>3D text camera - avatar</title>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+<script src="assets/cam3d.js"></script>
+<script src="assets/finish.js"></script>
+<script src="assets/o2o-data.js"></script>
+<style>
+  @font-face { font-family: "InterV"; src: url("assets/Inter-Variable.woff2") format("woff2"); font-weight: 100 900; font-display: block; }
+  @font-face { font-family: "InterTight9"; src: url("assets/InterTight-900.woff2") format("woff2"); font-weight: 900; font-display: block; }
+  body { margin: 0; background: #000; }
+  #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; }
+  .shot { position: absolute; left: 0; top: 0; width: 1440px; height: 1080px; overflow: hidden; }
+  .clipbox { position: absolute; left: 0; top: 0; width: 1440px; height: 1080px; overflow: hidden; }
+  .plate { position: absolute; left: 0; top: 0; width: 1920px; height: 1800px; transform-origin: 0 0; }
+  .person { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  .plate video, .person video, .sil video { display: block; width: 100%; height: 100%; }
+  .tl { position: absolute; left: 0; top: 0; width: 1440px; height: 1080px; }
+  .wg { position: absolute; left: 0; top: 0; width: 1440px; height: 1080px; isolation: isolate; }
+  .gh { position: absolute; left: 0; top: 0; width: 1440px; height: 1080px; mix-blend-mode: plus-lighter; opacity: 0.142857; }
+  .pc { position: absolute; left: 0; top: 0; line-height: 1; white-space: nowrap; transform-origin: 0 0; font-kerning: none; font-feature-settings: "kern" 0; }
+  .white .pc { color: #F8F8F2; font-family: "InterV", sans-serif; font-weight: 600; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.42); }
+  .ringw .pc { color: #F8F8F2; font-family: "InterV", sans-serif; font-weight: 700; text-shadow: 0 2px 14px rgba(0, 0, 0, 0.42); }
+  .red .pc { color: #F7471B; font-family: "InterTight9", sans-serif; font-weight: 900; }
+  .silclip { position: absolute; left: 0; top: 0; width: 1440px; height: 1080px; overflow: hidden; filter: brightness(0) blur(26px); }
+  .sil { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+  /* finish pass: the opaque scene (plate + behind text + person) gets the full grade + grain; the clip-path stays on .shot */
+  .scene { position: absolute; left: 0; top: 0; width: 1440px; height: 1080px; filter: url(#finish); }
+  #frontA, #frontB { filter: url(#finishT); }
+</style>
+</head>
+<body>
+<div id="root" data-composition-id="main" data-start="0" data-width="1440" data-height="1080" data-duration="19.24" data-fps="30">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <filter id="fA" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB"><fegaussianblur id="fAg" stdDeviation="0.02 0.02" edgeMode="duplicate" /></filter>
+      <filter id="fAp" x="-0.1" y="-0.1" width="1.2" height="1.2" color-interpolation-filters="sRGB"><fegaussianblur id="fApg" stdDeviation="0.02 0.02" /></filter>
+      <filter id="fB" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB"><fegaussianblur id="fBg" stdDeviation="0.02 0.02" edgeMode="duplicate" /></filter>
+      <filter id="fBp" x="-0.1" y="-0.1" width="1.2" height="1.2" color-interpolation-filters="sRGB"><fegaussianblur id="fBpg" stdDeviation="0.02 0.02" /></filter>
+      <!-- finish pass (finish-pass skill): curves S -> saturate 1.12 (skin, not the graphics 1.22) -> 3 % colour noise, seed rolled per frame -->
+      <filter id="finish" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+        <fecomponenttransfer in="SourceGraphic" result="crv"><fefuncr class="crv" type="table" tableValues="0 1" /><fefuncg class="crv" type="table" tableValues="0 1" /><fefuncb class="crv" type="table" tableValues="0 1" /></fecomponenttransfer>
+        <fecolormatrix in="crv" type="saturate" values="1.12" result="sat" />
+        <feturbulence class="nz" type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="1" result="nz" />
+        <fecolormatrix in="nz" type="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0 1" result="nz1" />
+        <fecomposite in="nz1" in2="sat" operator="arithmetic" k1="0" k2="0.09" k3="1" k4="-0.045" />
+      </filter>
+      <!-- same grade on the transparent text layers: grain laid ATOP so it lands only inside the letters and alpha stays exact
+           (no fog, motion-blur ghosts untouched). Grain layer = 5 % alpha of .5 + 1.8(n - .5); the text is pre-scaled so
+           .05(.5 + 1.8(n - .5)) + .95c' = c + .09(n - .5), the scene's additive grain, without clipping near-white text -->
+      <filter id="finishT" x="0" y="0" width="1" height="1" color-interpolation-filters="sRGB">
+        <fecomponenttransfer in="SourceGraphic" result="crv"><fefuncr class="crv" type="table" tableValues="0 1" /><fefuncg class="crv" type="table" tableValues="0 1" /><fefuncb class="crv" type="table" tableValues="0 1" /></fecomponenttransfer>
+        <fecolormatrix in="crv" type="saturate" values="1.12" result="sat" />
+        <fecomponenttransfer in="sat" result="pre"><fefuncr type="linear" slope="1.0526" intercept="-0.0263" /><fefuncg type="linear" slope="1.0526" intercept="-0.0263" /><fefuncb type="linear" slope="1.0526" intercept="-0.0263" /></fecomponenttransfer>
+        <feturbulence class="nz" type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="1" result="nz" />
+        <fecolormatrix in="nz" type="matrix" values="1.8 0 0 0 -0.4  0 1.8 0 0 -0.4  0 0 1.8 0 -0.4  0 0 0 0 0.05" result="nz1" />
+        <fecomposite in="nz1" in2="pre" operator="atop" />
+      </filter>
+    </defs>
+  </svg>
+
+  <!-- SHOT A 0.00-4.07: medium punch-in, whip-in, two caption layouts behind the subject -->
+  <div id="shotA" class="shot">
+    <div id="sceneA" class="scene">
+    <div id="clipA" class="clipbox"><div id="plateA" class="plate" data-layout-allow-overflow="">
+      <video id="vA" class="clip" src="assets/g1-plate-tall.mp4" data-start="0" data-duration="4.1" data-media-start="0" data-track-index="0" muted playsinline></video>
+    </div></div>
+    <div id="behindA" class="tl" data-layout-allow-occlusion="" data-layout-allow-overflow=""></div>
+    <div id="pclipA" class="clipbox"><div id="personA" class="person" data-layout-allow-overflow="">
+      <video id="mA" class="clip" src="assets/g1-person-alpha-full.webm" data-start="0" data-duration="4.1" data-media-start="0" data-track-index="1" muted playsinline></video>
+    </div></div>
+    </div>
+    <div id="frontA" class="tl" data-layout-allow-overflow=""></div>
+  </div>
+
+  <!-- SHOT B 3.47-19.24: wide ring -> fly-through phrases -> rotating ring -> push-in finale -->
+  <div id="shotB" class="shot">
+    <div id="sceneB" class="scene">
+    <div id="clipB" class="clipbox"><div id="plateB" class="plate" data-layout-allow-overflow="">
+      <video id="vB" class="clip" src="assets/g1-plate-tall.mp4" data-start="3.4" data-duration="15.84" data-media-start="3.4" data-track-index="2" muted playsinline></video>
+    </div></div>
+    <div id="behindB" class="tl" data-layout-allow-occlusion="" data-layout-allow-overflow=""></div>
+    <div id="pclipB" class="clipbox"><div id="personB" class="person" data-layout-allow-overflow="">
+      <video id="mB" class="clip" src="assets/g1-person-alpha-full.webm" data-start="3.4" data-duration="15.84" data-media-start="3.4" data-track-index="3" muted playsinline></video>
+    </div></div>
+    </div>
+    <div id="frontB" class="tl" data-layout-allow-overflow=""></div>
+  </div>
+
+  <!-- wipe carrier: his own matte, crushed black + defocused, passing the lens R->L -->
+  <div id="silclip" class="silclip"><div id="silw" class="sil" data-layout-allow-overflow="">
+    <video id="vSil" class="clip" src="assets/g1-person-alpha-full.webm" data-start="3.2" data-duration="1.4" data-media-start="3.2" data-track-index="4" muted playsinline></video>
+  </div></div>
+
+  <audio id="vo" src="assets/g1-hero.mp4" data-start="0" data-duration="19.24" data-track-index="10" data-volume="1"></audio>
+</div>
+
+<script>
+(function () {
+  var C3 = window.CAM3D, O = window.O2O, FPS = 30, W = 1440, H = 1080;
+  C3.init(O.adv);
+  window.FINISH.init();
+  var $ = function (id) { return document.getElementById(id); };
+  var DP = 3000, A_DOF = 6.7, LEAD = 0.2;                       // plate distance; DOF strength; captions lead the VO by 0.2 s
+  var ENTRY = O.ENTRY, RING_ENTRY = O.RING_ENTRY;
+  function fr(t) { return Math.max(0, 2 * Math.round((t - LEAD) * 15)); }   // speech time -> onset frame on the 15-fps grid
+  function adv(font, s) { return C3.advOf(font, s); }
+
+  // ================= CAMERAS =================
+  // Shot A: the tutorial's measured whip-in (f0-f19, table) then additive moves
+  var camAseg = C3.camFromSegments({ m: 1, px: 0, py: 0 }, [
+    { t0: 0.633, dur: 2.7, prof: 'linear', py: -48 },                 // creep: the frame never lands
+    { t0: 1.30, dur: 0.65, prof: 'swing', tx: 420 },                  // truck right -> captions swap by parallax (current LEFT)
+    { t0: 3.10, dur: 0.97, prof: 'exit3', m: -0.13, px: -70 }         // accelerating pull-out into the body wipe (tutorial f27-f33)
+  ], DP);
+  var camA = new C3.Camera(function (t) {
+    if (t < 19 / 30) { var m = C3.tab(O.camA, 'm', t); return { cz: DP * (1 - 1 / m), px: C3.tab(O.camA, 'px', t), py: C3.tab(O.camA, 'py', t), tx: 0, ty: 0, m: m }; }
+    return camAseg.at(t);
+  }, DP);
+
+  // Shot B: the tutorial's measured shot-2 camera (ref f30-f97) mapped so ref f40 (band centre mid-frame) = 3.80 s
+  var TB0 = 3.80, TB_END = TB0 + (97 - 40) / 30;                     // 5.70 s
+  var endB = { m: C3.tab(O.camB, 'm', 97 / 30), px: C3.tab(O.camB, 'px', 97 / 30), py: C3.tab(O.camB, 'py', 97 / 30) };
+  var camBseg = C3.camFromSegments({ m: endB.m, px: endB.px, py: endB.py }, [
+    { t0: 5.80, dur: 1.10, prof: 'push', m: 0.256 },                  // tutorial push-in f100-f133 (accelerating)
+    { t0: 6.90, dur: 0.63, prof: 'arrive', m: 0.037, py: 30 },         // ...continues and lands on phrase 1 (never a dead stop)
+    { t0: 7.45, dur: 0.55, prof: 'swing', m: 0.14, tx: 150 },          // fly to phrase 2
+    { t0: 9.00, dur: 0.55, prof: 'swing', m: 0.12, tx: -300 },         // fly to phrase 3
+    { t0: 10.05, dur: 0.60, prof: 'swing', m: 0.12, tx: 150, py: 30 }, // fly to phrase 4 (behind him)
+    { t0: 10.65, dur: 1.40, prof: 'linear', m: 0.02 },                 // creep
+    { t0: 12.05, dur: 0.20, prof: 'exit3', px: -260 },                 // whip exit: content accelerates LEFT
+    { t0: 12.25, dur: 0, prof: 'step', m: -0.523, px: 760, py: -60 },  // cut at peak blur (frame 367.5) to the ring framing
+    { t0: 12.25, dur: 0.633, prof: 'arrive', px: -500 },               // whip arrival, still moving LEFT
+    { t0: 12.90, dur: 3.40, prof: 'linear', m: 0.03 },                 // slow push while the ring turns
+    { t0: 16.35, dur: 0.60, prof: 'push', m: 0.30, py: 40 },           // push into the finale
+    { t0: 16.95, dur: 0.63, prof: 'arrive', m: 0.045 },
+    { t0: 17.60, dur: 1.64, prof: 'linear', m: 0.025 }
+  ], DP);
+  var camB = new C3.Camera(function (t) {
+    if (t < TB_END) {
+      var tt = (40 + (t - TB0) * FPS) / FPS, m = C3.tab(O.camB, 'm', tt);
+      return { cz: DP * (1 - 1 / m), px: C3.tab(O.camB, 'px', tt), py: C3.tab(O.camB, 'py', tt), tx: 0, ty: 0, m: m };
+    }
+    return camBseg.at(t);
+  }, DP);
+
+  // ================= PLATES =================
+  var plateA = new C3.Plate({ el: $('plateA'), clipEl: $('clipA'), personEl: $('personA'), personClipEl: $('pclipA'),
+    fPlate: $('fAg'), fPerson: $('fApg'), padTop: 480, refU: 901, refV: 728, refX: 720, refY: 194, S0: 1.32, D0: DP,
+    dof: function () { return 0; } });
+  // focus distance for shot B (distance from camera): ring -> phrase 1..3 -> subject -> flat ring -> subject
+  var DR = 1154, RF = 1000, D1 = 1500, D2 = 2000, D3 = 2500, D4 = 1300;   // RF: ring-1 focus on its near arc; D4: ring-2 focus on its front arc
+  function focusB(t) {
+    var c = camB.at(t), z = c.cz;
+    function mix(a, b, t0, t1) { var u = C3.clamp((t - t0) / (t1 - t0), 0, 1); u = u * u * (3 - 2 * u); return a + (b - a) * u; }
+    if (t < 5.9) return RF - z;
+    if (t < 7.5) return mix(RF - z, D1 - z, 5.9, 6.6);
+    if (t < 9.05) return mix(D1 - z, D2 - z, 7.5, 7.9);
+    if (t < 10.1) return mix(D2 - z, D3 - z, 9.05, 9.45);
+    if (t < 12.25) return mix(D3 - z, DP - z, 10.1, 10.55);
+    if (t < 16.4) return D4 - z;
+    return mix(D4 - z, DP - z, 16.4, 16.9);
+  }
+  function dofAt(D, t) { var f = focusB(t); return A_DOF * Math.abs(D - f) / D; }
+  var plateB = new C3.Plate({ el: $('plateB'), clipEl: $('clipB'), personEl: $('personB'), personClipEl: $('pclipB'),
+    fPlate: $('fBg'), fPerson: $('fBpg'), padTop: 480, refU: 901, refV: 1080, refX: 700, refY: 620, S0: 1.07, D0: DP,
+    dof: function (t) { return dofAt(DP - camB.at(t).cz, t); } });
+  function dofWordB(word, c, tp) { return dofAt((word.zNow != null ? word.zNow : word.o.D0) - c.cz, tp); }   // 3D ring words use their current depth
+
+  // ================= WORDS =================
+  var words = { A: [], B: [] };
+  // stepped fade (posterized): 1, .66, .33 over three 15-fps steps after 'off'
+  function fadeFn(off) { return off == null ? null : function (tp) { var n = Math.floor((tp - off / FPS) * 15 + 1e-6); return n < 0 ? 1 : Math.max(0, 1 - (n + 1) / 3); }; }
+  // a caption line: words laid left->right at a landing-screen left-baseline, each rising in on the measured profile.
+  // spec.size / spec.rise are ON-SCREEN px at the landing camera (the element is sized size/k so perspective lands it there)
+  function line(shot, parent, cam, spec) {
+    var x = spec.x, font = spec.cls === 'red' ? 'tight900' : 'inter600';
+    var cl = cam.at(spec.tland), kl = spec.D0 / (spec.D0 - cl.cz);
+    spec.words.forEach(function (w) {
+      var ref = C3.unproject(cl, x, spec.y, spec.D0);
+      var on = w[1], rise = spec.rise / kl;
+      var o = { text: w[0], cls: spec.cls, size: spec.size / kl, on: on / FPS, off: spec.off != null ? (spec.off + 6) / FPS : null,
+        D0: spec.D0, kmax: spec.kmax || 1e9, opacity: fadeFn(spec.off),
+        state: function (ta) { return { x: ref.x, y: ref.y + rise * C3.entry(ENTRY, (ta - on / FPS) * 15), ax: 0, ay: C3.BASE * spec.size / kl }; } };
+      words[shot].push(new C3.Word(parent, o));
+      x += adv(font, w[0] + ' ') * spec.size;
+    });
+  }
+  function centred(font, text, size, cx) { return cx - adv(font, text) * size / 2; }
+
+  // ---- Shot A layout 1: "So, we built an" / "agent" (red, behind him) ----
+  line('A', $('frontA'), camA, { cls: 'white', size: 66, x: 110, y: 420, D0: 2400, tland: 1.0, rise: 34, off: fr(1.62),
+    words: [['So,', 4], ['we', 6], ['built', 10], ['an', fr(0.94)]] });
+  line('A', $('behindA'), camA, { cls: 'red', size: 400, x: 150, y: 700, D0: DP, tland: 1.0, rise: 243, off: fr(1.62),
+    words: [['agent', fr(1.11)]] });
+  // ---- Shot A layout 2 (arrives through the truck by parallax): "that does the" / "whole job." ----
+  line('A', $('frontA'), camA, { cls: 'white', size: 66, x: 110, y: 420, D0: 2400, tland: 2.2, rise: 34,
+    words: [['that', fr(1.54)], ['does', fr(1.88)], ['the', fr(2.22)]] });
+  line('A', $('behindA'), camA, { cls: 'red', size: 270, x: centred('tight900', 'whole job.', 270, 740), y: 700, D0: DP, tland: 2.2, rise: 170,
+    words: [['whole', fr(2.47)], ['job.', fr(2.87)]] });
+
+  // ---- Shot B ring 1: "Not a template, not a timeline." on the tutorial's measured ring (text on path) ----
+  // a REAL tilted 3D circle (fit to the tutorial's ring: far top arc 1.57x the near arc's distance, passes behind his head);
+  // centred on the subject in this framing (plate sits +100 / -8 px vs the 1:1 test)
+  var R1 = new C3.Ring3D({ X: -79.5, Y: 24.05, Z: 1172.68, R: 393.65, rx: -0.6953, ry: -0.1964, rz: -0.3652, Zf: DR });
+  var Z_SPLIT1 = 1300;                                                 // glyphs deeper than this draw behind him (matte above)
+  (function () {
+    var sent = [['Not', 'inter700', 70, fr(3.80), true], ['a', 'inter700', 70, fr(4.09), true], ['template,', 'tight900', 104, fr(4.13), false],
+                ['not', 'inter700', 70, fr(5.00), false], ['a', 'inter700', 70, fr(5.28), false], ['timeline.', 'tight900', 104, fr(5.37), false]];
+    // starts past the top: "Not a" sits at his hair line, stays legible. The whole line is spaced by ON-SCREEN advance
+    // (ringLine): arc-length spacing crushed letters and words together where the ring turns toward/away from the lens
+    var flipAt = function (th) { var deg = ((th * 180 / Math.PI) + 360) % 360; return deg > 135 && deg < 265; };
+    var flips = sent.map(function () { return false; }), line;
+    for (var it = 0; it < 3; it++) {
+      line = C3.ringLine(R1, sent.map(function (w, i) { return { text: w[0], font: w[1], size: w[2], flip: flips[i], lift: flips[i] ? 0.81 : 0.36 }; }),
+                         { start: R1.sOf(52 * Math.PI / 180), dir: 1, gap: 28 });
+      flips = line.map(function (l) { return flipAt(l.th); });
+    }
+    sent.forEach(function (w, i) {
+      var th = line[i].th, flip = flips[i];
+      var lay = C3.ringLayout(R1, w[0], w[1], w[2], th, flip ? 0.81 : 0.36, flip, null, { rel: line[i].rel });
+      var on = w[3], off = fr(6.35), zm = C3.meanZ(lay.pose(0));
+      ['behind', 'front'].forEach(function (side) {
+        words.B.push(new C3.Word(side === 'behind' ? $('behindB') : $('frontB'), { pieces: lay.chars, cls: w[1] === 'tight900' ? 'red' : 'ringw',
+          size: w[2], on: on / FPS, off: (off + 6) / FPS, D0: zm, side: side, zSplit: Z_SPLIT1, kmax: 2.4, opacity: fadeFn(off),
+          state: function (ta) { var n = (ta - on / FPS) * 15; return lay.pose(-64 * C3.entry(RING_ENTRY, n)); } }));
+      });
+    });
+  })();
+
+  // ---- Shot B fly-through: four phrases at increasing depth; the camera pushes from one to the next ----
+  var P = [
+    { D0: D1, tland: 7.30, off: fr(7.75), white: [['You', fr(6.39)], ['describe', fr(6.69)], ['the', fr(7.13)]], red: [['video,', fr(7.33)]], wx: 130, wy: 700, rx: 110, ry: 960, rs: 250 },
+    { D0: D2, tland: 8.80, off: fr(9.28), white: [['it', fr(7.80)], ['writes', fr(7.97)], ['the', fr(8.48)]], red: [['script,', fr(8.76)]], wx: 760, wy: 660, rx: 690, ry: 880, rs: 230 },
+    { D0: D3, tland: 9.90, off: fr(10.35), white: [['builds', fr(9.33)], ['the', fr(9.59)]], red: [['scenes,', fr(10.09)]], wx: 110, wy: 700, rx: 90, ry: 910, rs: 220 },
+    { D0: DP, tland: 11.2, off: fr(12.35), white: [['and', fr(10.40)], ['delivers', fr(10.48)], ['the', fr(10.81)]], red: [['finished', fr(10.84)], ['cut.', fr(11.57)]], wx: 800, wy: 200, rx: null, ry: 470, rs: 240, behindRed: true }
+  ];
+  P.forEach(function (p) {
+    line('B', $('frontB'), camB, { cls: 'white', size: 70, x: p.wx, y: p.wy, D0: p.D0 === DP ? 2400 : p.D0, tland: p.tland, rise: 34, off: p.off, kmax: 3.2, words: p.white });
+    var rx = p.rx != null ? p.rx : centred('tight900', p.red.map(function (w) { return w[0]; }).join(' '), p.rs, 720);
+    line('B', p.behindRed ? $('behindB') : $('frontB'), camB, { cls: 'red', size: p.rs, x: rx, y: p.ry, D0: p.D0, tland: p.tland, rise: 150, off: p.off, kmax: 3.2, words: p.red });
+  });
+
+  // ---- Shot B ring 2: a flat ring around his shoulders that turns item by item (text on path, front arc only) ----
+  // a REAL horizontal circle around his chest, seen 20 deg from edge-on: front arc at 1142 (close to the lens), sides at 1800,
+  // back arc at 2458 behind his head. Perspective does the depth: front glyphs ~1.8x those at the sides, which rise ~300 px as they turn.
+  var R2C = { X: -35, Y: -101, Z: 1800, R: 700 };
+  var R2 = new C3.Ring3D({ X: R2C.X, Y: R2C.Y, Z: R2C.Z, R: R2C.R, rx: -(Math.PI / 2 - 0.349), ry: 0, rz: -0.06, Zf: 1100 });
+  var ITEM = R2.L / 3, FRONT = R2.sOf(Math.PI);                       // items 120 deg apart (90 let a turning item run into the next); front = th pi
+  var swings = [[12.35, 0.45, 0], [13.40, 0.60, ITEM], [14.80, 0.60, ITEM], [16.15, 0.60, ITEM * 0.6]];
+  function turn(t) {                                                   // ring offset: measured swing moves + a creep (never lands)
+    var s = 0; swings.forEach(function (w) { s += w[2] * C3.PROF.swing(C3.clamp((t - w[0]) / w[1], 0, 1)); });
+    return s + 22 * Math.max(0, t - 12.25);
+  }
+  var items = [
+    [['A', 'inter700', 64, fr(12.30)], ['product update.', 'tight900', 90, fr(12.57)]],
+    [['A', 'inter700', 64, fr(13.38)], ['training course.', 'tight900', 90, fr(13.65)]],
+    [['A', 'inter700', 64, fr(14.70)], ['customer pitch.', 'tight900', 90, fr(14.97)]]
+  ];
+  var lead0 = -(turn(12.80) - 0);                                      // item 1 centred on the front at 12.80
+  var fade2 = function (q) {
+    // angle from the front via depth: glyphs fade up as they turn in from the side (62 -> 36 deg) and out as they leave;
+    // past ~40 deg the path curls toward edge-on and upright glyphs would touch at the tops
+    var c = (R2C.Z - q.z) / (R2C.R * Math.cos(0.349)), a = C3.clamp((c - 0.469) / (0.809 - 0.469), 0, 1);
+    return { s: 1, hid: a <= 0.001, a: a };
+  };
+  items.forEach(function (it, k) {
+    // each item is laid out ON SCREEN wherever it currently sits on the ring (reading runs counter-clockwise: dir -1, flipped):
+    // rigid arc offsets crushed the glyphs together as they turned toward the edge-on sides
+    var spec = it.map(function (w) { return { text: w[0], font: w[1], size: w[2], flip: true }; });
+    var shift = lead0 - k * ITEM, cache = {};                          // item slot (arc length) before turning
+    var lineAt = function (ta) {
+      var key = ta.toFixed(5); if (!cache[key]) cache[key] = C3.ringLine(R2, spec, { centre: FRONT + shift + turn(ta), dir: -1, gap: 30 });
+      return cache[key];
+    };
+    it.forEach(function (w, j) {
+      var layAt = function (ta) { var l = lineAt(ta)[j]; return C3.ringLayout(R2, w[0], w[1], w[2], l.th, 0.36, true, fade2, { rel: l.rel }); };
+      var lay0 = layAt(12.80 + k * 0);                                 // pieces + reference depth
+      // an item leaves once its exit swing ends (three items 120 deg apart: the first would come back round on the last swing)
+      var on = w[3], off = fr(16.75), gone = k < 2 ? swings[k + 1][0] + swings[k + 1][1] + 0.05 : (off + 6) / FPS;
+      words.B.push(new C3.Word($('frontB'), { pieces: lay0.chars, cls: w[1] === 'tight900' ? 'red' : 'ringw', size: w[2],
+        on: on / FPS, off: gone, D0: C3.meanZ(lay0.pose(0)), opacity: fadeFn(off), shutter: 0.4,
+        state: function (ta) {
+          return layAt(ta).pose(0);                                    // visibility comes from the per-glyph angle fade
+        } }));
+    });
+  });
+
+  // ---- Shot B finale: "Video agent" behind him, "is here." / "Give it your first prompt." in front ----
+  line('B', $('behindB'), camB, { cls: 'red', size: 225, x: centred('tight900', 'Video agent', 225, 720), y: 555, D0: DP, tland: 17.4, rise: 160,
+    words: [['Video', fr(16.93)], ['agent', fr(17.02) + 2]] });
+  line('B', $('frontB'), camB, { cls: 'white', size: 74, x: 1010, y: 300, D0: 2400, tland: 17.4, rise: 34, words: [['is', fr(17.40)], ['here.', fr(17.55)]] });
+  line('B', $('frontB'), camB, { cls: 'white', size: 70, x: 110, y: 1000, D0: 2400, tland: 18.6, rise: 34,
+    words: [['Give', fr(18.12)], ['it', fr(18.27)], ['your', fr(18.41)], ['first', fr(18.59)], ['prompt.', fr(18.82)]] });
+
+  // ================= WIPE (tutorial's measured body pass, band centre mid-frame at 3.80 s) =================
+  function wipeX(t) { return C3.tab(O.wipe, 'x', (40 + (t - 3.80) * FPS) / FPS); }
+  var T_A_END = 3.80 + 8 / 30, T_B_START = 3.80 - 10 / 30;
+
+  function paint(t) {
+    window.FINISH.seed(t);                                        // grain re-rolls every frame
+    var xw = wipeX(t), inWipe = t >= 3.80 - 16 / 30 && t <= 3.80 + 22 / 30;
+    var showA = t < T_A_END, showB = t >= T_B_START;
+    $('shotA').style.display = showA ? 'block' : 'none';
+    $('shotB').style.display = showB ? 'block' : 'none';
+    if (showA) {
+      $('shotA').style.clipPath = inWipe ? 'inset(0px ' + C3.clamp(1440 - xw, 0, 1440).toFixed(1) + 'px 0px 0px)' : 'none';
+      plateA.paint(camA, t);
+      for (var i = 0; i < words.A.length; i++) words.A[i].paint(t, camA, null);
+    }
+    if (showB) {
+      $('shotB').style.clipPath = inWipe && xw > 0 ? 'inset(0px 0px 0px ' + C3.clamp(xw, 0, 1440).toFixed(1) + 'px)' : 'none';
+      plateB.paint(camB, t);
+      for (var j = 0; j < words.B.length; j++) words.B[j].paint(t, camB, dofWordB);
+    }
+    $('silclip').style.display = inWipe ? 'block' : 'none';
+    if (inWipe) {
+      var sc = 3.4;
+      $('silw').style.transform = 'matrix(' + sc + ',0,0,' + sc + ',' + (xw - 30 - 901 * sc).toFixed(2) + ',' + (-40 - 248 * sc).toFixed(2) + ')';
+    }
+  }
+
+  var clock = { t: 0 };
+  var tl = gsap.timeline({ paused: true });
+  tl.to(clock, { t: 19.24, duration: 19.24, ease: 'none', onUpdate: function () { paint(clock.t); } }, 0);
+  paint(0);
+  window.__mainPaint = paint;
+  window.__timelines['main'] = tl;
+})();
+</script>
+</body>
+</html>
