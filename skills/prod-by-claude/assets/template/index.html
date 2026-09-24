@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1080" />
+    <title>strudel code video</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script src="data/events.js"></script>
+    <style>
+      @font-face { font-family: "JetBrains Mono"; font-weight: 500; src: url("assets/fonts/jetbrains-mono-latin-500-normal.woff2") format("woff2"); }
+      @font-face { font-family: "JetBrains Mono"; font-weight: 700; src: url("assets/fonts/jetbrains-mono-latin-700-normal.woff2") format("woff2"); }
+      @font-face { font-family: "Rubik Mono One"; font-weight: 400; src: url("assets/fonts/rubik-mono-one-latin-400-normal.woff2") format("woff2"); }
+      /* theme variables are painted every frame by app.js (real Strudel themes, blended) */
+      :root {
+        --bg: #051db5; --fg: #ffffff; --muted: rgba(255, 255, 255, 0.6); --gutter: rgba(255, 255, 255, 0.6);
+        --hl: rgba(0, 0, 0, 0.31); --cm: #ffffff; --str: #ffffff; --num: #ffffff; --kw: #ffffff; --lbl: #ffffff; --fn: #ffffff; --var: #ffffff;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1080px; overflow: hidden; background: var(--bg); }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg);
+        font-family: "JetBrains Mono", ui-monospace, monospace; color: var(--fg);
+        font-variant-ligatures: none; font-feature-settings: "liga" 0, "calt" 0; }
+      #stage { position: absolute; inset: 0; overflow: hidden; }
+      #tilt { position: absolute; inset: 0; }
+      #cam { position: absolute; left: 0; top: 0; transform-origin: 0 0; will-change: transform; }
+      #sheet { position: absolute; left: 0; top: 0; width: 1106px; height: 4200px; }
+      .row { position: absolute; left: 0; top: 0; height: 42px; width: 1106px; white-space: pre; --on: 1; }
+      .row .hl { position: absolute; inset: 0; background: var(--hl); opacity: 0; }
+      .row .glow { position: absolute; left: 56px; right: 0; top: 3px; bottom: 3px; background: var(--fg); opacity: 0; }
+      .row .gut { position: absolute; left: 0; top: 0; width: 46px; height: 42px; text-align: right;
+        font-size: 20px; line-height: 42px; color: var(--gutter); opacity: 0; }
+      .row .txt { position: absolute; left: 64px; top: 0; height: 42px; overflow: hidden; width: 0;
+        font-size: 28px; line-height: 42px; font-weight: 500; }
+      /* code sits in the theme's muted color until its paragraph plays, then blooms into its syntax color */
+      .row .txt span { color: color-mix(in srgb, var(--c) calc(var(--on) * 100%), var(--muted)); }
+      .t-p { --c: var(--fg); } .t-cm { --c: var(--cm); } .t-str { --c: var(--str); } .t-num { --c: var(--num); }
+      .t-kw { --c: var(--kw); } .t-lbl { --c: var(--lbl); } .t-fn { --c: var(--fn); } .t-var { --c: var(--var); }
+      .row .txt .sl { display: inline-block; position: relative; width: 100.8px; height: 42px; vertical-align: top; }
+      .sl .trk { position: absolute; left: 6px; right: 10px; top: 16px; height: 10px; border-radius: 5px;
+        background: color-mix(in srgb, var(--fg) 28%, transparent); overflow: hidden; }
+      .sl .fil { position: absolute; left: 0; top: 0; bottom: 0; background: var(--num); border-radius: 5px; }
+      .sl .thb { position: absolute; top: 12px; width: 18px; height: 18px; margin-left: -9px; border-radius: 50%; background: var(--fg); }
+      .widget { position: absolute; left: 97.6px; width: 940.8px; overflow: hidden; height: 0; }
+      .widget canvas { position: absolute; left: 0; top: 8px; width: 940.8px; }
+      .hlbox { position: absolute; left: 0; top: 0; border: 2px solid var(--fg); border-radius: 3px; display: none; }
+      .hlbox .inv { position: absolute; inset: 0; background: var(--fg); opacity: 0; overflow: hidden; }
+      .hlbox .inv span { position: absolute; left: 1px; top: -7px; font-size: 28px; line-height: 42px; font-weight: 500; color: var(--bg); white-space: pre; }
+      .hlbox .ring { position: absolute; inset: -2px; border: 2px solid var(--fg); border-radius: 4px; opacity: 0; }
+      #caret { position: absolute; left: 0; top: 0; width: 3px; height: 34px; background: var(--fg); display: none; }
+      #fflash { position: absolute; inset: 0; background: var(--fg); opacity: 0; }
+      #glitch, #storm { position: absolute; left: 0; top: 0; width: 1080px; height: 1080px; }
+      #storm { display: none; }
+      #wash { position: absolute; inset: 0; opacity: 0;
+        background: radial-gradient(circle at 50% 55%, color-mix(in srgb, var(--fg) 70%, transparent) 0%, color-mix(in srgb, var(--fg) 25%, transparent) 45%, transparent 80%); }
+      #fadeout { position: absolute; inset: 0; background: #000; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <!-- build-data.mjs stamps the root data-duration and the audio start/length from the recording -->
+    <div id="root" data-composition-id="main" data-start="0" data-duration="60" data-width="1080" data-height="1080">
+      <div id="stage">
+        <div id="tilt"><div id="cam"><div id="sheet"><div id="caret"></div></div></div></div>
+        <div id="fflash" data-layout-allow-occlusion data-layout-allow-overlap></div>
+        <canvas id="glitch" width="1080" height="1080" data-layout-allow-occlusion data-layout-allow-overlap></canvas>
+        <div id="wash" data-layout-allow-occlusion data-layout-allow-overlap></div>
+        <canvas id="storm" width="1080" height="1080" data-layout-allow-occlusion data-layout-allow-overlap></canvas>
+        <div id="fadeout" data-layout-allow-occlusion data-layout-allow-overlap></div>
+      </div>
+      <audio id="bgm" src="assets/bgm.wav" data-start="2" data-duration="58" data-track-index="10" data-volume="1"></audio>
+    </div>
+    <script src="app.js"></script>
+    <script>
+      Promise.all([document.fonts.ready, document.fonts.load('400 100px "Rubik Mono One"'), document.fonts.load('700 20px "JetBrains Mono"')]).then(() => {
+        const tl = window.__svInit();
+        window.__timelines["main"] = tl;
+      });
+    </script>
+  </body>
+</html>
