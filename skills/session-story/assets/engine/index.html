@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <style>
+      @font-face {
+        font-family: "Permanent Marker";
+        src: url("assets/fonts/permanent-marker-400.woff2") format("woff2");
+        font-display: block;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        width: 1920px;
+        height: 1080px;
+        overflow: hidden;
+        background: #f3ebdc;
+      }
+      #root {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background: #f3ebdc;
+      }
+      /* the kit paints in a hidden p5/WebGL canvas and composites each frame (paper grain on top) into #out */
+      #out {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .p5Canvas {
+        display: none !important;
+      }
+    </style>
+    <script src="assets/vendor/p5.min.js"></script>
+    <script src="assets/vendor/p5.brush.js"></script>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="60"
+      data-fps="24"
+      data-no-timeline
+      data-width="1920"
+      data-height="1080"
+    >
+      <canvas id="out" width="1920" height="1080"></canvas>
+      <!-- the score: composed against this film's timeline (score/score.py), rendered by score/build.sh -->
+      <audio id="score" src="assets/audio/score.wav" data-start="0" data-duration="60" data-track-index="1" data-volume="1"></audio>
+    </div>
+    <!-- engine: ClaudeAnimationBase (kit/, MIT, see LICENSE-ClaudeAnimationBase), bridged to HyperFrames seeking by kit/hf-bridge.js -->
+    <script src="kit/config.js"></script>
+    <script src="kit/core.js"></script>
+    <script src="kit/clawd.js"></script>
+    <script src="kit/timeline.js"></script>
+    <script src="kit/hf-bridge.js"></script>
+    <!-- the set, the room's props, the paper model, the story and the film -->
+    <script src="scenes/desk.js"></script>
+    <script src="scenes/props.js"></script>
+    <script src="scenes/props-custom.js"></script>
+    <script src="scenes/paper.js"></script>
+    <script src="scenes/cast-custom.js"></script>
+    <script src="scenes/compile.js"></script>
+    <script src="story.js"></script>
+    <script src="scenes/director.js"></script>
+  </body>
+</html>

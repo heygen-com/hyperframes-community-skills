@@ -23,6 +23,7 @@ directory under `skills/` is independent and can be installed on its own.
 | [`camera-3d-captions`](skills/camera-3d-captions/) | Puts captions in 3D space around a talking head: a moving camera, caption groups at different depths, hero words behind the speaker, and a ring of words turning in front of them. |
 | [`duo`](skills/duo/) | Composites two HTML screens into a locked photo plate of hands holding an open foldable phone for side-by-side comparison and meme videos. |
 | [`p5-paint-animation`](skills/p5-paint-animation/) | Turns text, photos, and short clips into deterministic p5.js handwriting, paint-on, and living-painting animations. |
+| [`session-story`](skills/session-story/) | Has your agent animate a typical session with you, start to finish: your real messages arrive as paper planes, mallets and butterflies in a room it decorates from what it knows about you, scored with music it composes itself. |
 | [`vox-explainer`](skills/vox-explainer/) | Builds 60–90 second, collage-style HyperFrames explainers from a topic, document, or link. |
 | [`x-posting-license`](skills/x-posting-license/) | Renders a 10s animated "posting license" ID-card video for any X profile from a locked composition template. |
 
