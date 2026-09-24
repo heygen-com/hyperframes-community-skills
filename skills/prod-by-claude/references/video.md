@@ -81,6 +81,6 @@ Theme names: see [themes.md](themes.md).
 - Bar numbers in the storm go up to 16 per drop.
 - The storm is expensive to render (tens of thousands of glyphs per frame). A 60 s video takes a few
   minutes locally.
-- Recording renders audio offline in headless Chrome. A 32-bar track takes about 4-5 minutes,
+- Recording renders audio offline in headless Chrome. A 32-bar track takes about 5-7 minutes,
   most of it in the mix step, with a progress line per step. Give the command a 10 minute
   timeout.

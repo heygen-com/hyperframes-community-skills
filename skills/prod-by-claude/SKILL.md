@@ -46,7 +46,7 @@ the video is driven by Strudel's own note events, so every highlight lands on it
 3. From `<project-dir>/tools`, install the pinned tools: `npm install`
 4. From `<project-dir>/tools`, if `CHROME` is not set, fetch Chrome for Testing:
    `npx --yes @puppeteer/browsers@3.2.3 install chrome@149.0.7827.22 --path .chrome`
-5. From `<project-dir>/tools`, record: `node record.mjs ..` It takes about 4-5 minutes for 32
+5. From `<project-dir>/tools`, record: `node record.mjs ..` It takes about 5-7 minutes for 32
    bars (give it a 10 minute timeout), prints levels per 4 bars and warns on clipping. Fix the
    track and record again until the drops peak at or below -2 dBFS with no clipped samples.
 6. From `<project-dir>/tools`, build the video data: `node build-data.mjs ..` It prints the
