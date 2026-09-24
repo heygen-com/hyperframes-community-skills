@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>strudel recorder</title>
+<!--
+  Loaded by record.mjs in a local, muted, headless Chrome. It runs the pinned @strudel/web build
+  from node_modules; nothing is fetched from strudel.cc. Samples are only fetched if the track
+  itself calls samples(...).
+-->
+<script type="module">
+  import * as strudel from "./node_modules/@strudel/web/dist/index.mjs";
+
+  // Editor widgets draw inside the strudel.cc editor and never change the sound. Outside the
+  // editor they are identity functions, and sliders hold their written value.
+  const { Pattern, pure } = strudel;
+  for (const name of ["_punchcard", "_pianoroll", "_scope", "_spiral", "_pitchwheel", "punchcard", "pianoroll", "scope", "spiral"]) {
+    Pattern.prototype[name] = function () {
+      return this;
+    };
+  }
+  window.sliderWithID = (id, value) => pure(Number(value));
+
+  window.strudel = strudel;
+  window.recorderReady = strudel.initStrudel().then((repl) => {
+    window.repl = repl;
+    return true;
+  });
+</script>

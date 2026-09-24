@@ -1,0 +1,16 @@
+{
+  "track": "track.strudel.js",
+  "bars": 32,
+  "fps": 30,
+  "pre": 2.0,
+  "opener": true,
+  "signoff": "// dj opus out",
+  "builds": [[9, 13], [21, 25]],
+  "drops": [[13, 21], [25, 33]],
+  "themes": [[1, "bluescreen"], [5, "fruitDaw"], [9, "redText"], [13, "sonicPink"], [21, "CutiePi", "start"], [25, "dracula"]],
+  "storm": { "kick": "kick", "snare": "snare", "rain": "vox", "punch": "bass", "words": ["DROP", "LOUD"] },
+  "ending": {
+    "bars": 2,
+    "code": "$: stack(s(\"sbd\").decay(.6).gain(.5), s(\"pink\").decay(1.2).sustain(0).hpf(3000).gain(.25), note(\"[a2, e3, a3]\").sound(\"square\").lpf(2400).decay(1.6).sustain(0).postgain(.3))"
+  }
+}
