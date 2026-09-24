@@ -1,0 +1,43 @@
+{
+  "user": "Jake",
+  "agent": "Claude",
+  "nameplate": "Jake’s favorite agent",
+  "hook": ["Initiating session", "with Jake"],
+  "cast": "clawd",
+  "approved": true,
+  "screen": "image",
+  "room": {
+    "sill": "roses",
+    "wallA": { "prop": "corkboard", "cards": [{ "kind": "landscape" }, { "kind": "blob", "a": "#8FA3FF" }, { "kind": "gradient", "a": "#F2A283", "b": "#7B5CA8" }] },
+    "wallB": "curve-print",
+    "wallC": "record",
+    "shelf": ["clapperboard", "books", "dachshund"],
+    "hook": "headphones",
+    "floor": "guitar",
+    "desk": "mic",
+    "why": {
+      "roses": "a painting study we made together: roses on a windowsill",
+      "corkboard": "thumbnails of films we made: the park walk, a cloud character, a gradient",
+      "curve-print": "he's a motion designer: an ease curve with its two handles",
+      "record": "music is always on",
+      "clapperboard": "he makes videos",
+      "dachshund": "his dog",
+      "headphones": "music while working",
+      "guitar": "he plays",
+      "mic": "he dictates more than he types"
+    }
+  },
+  "beats": [
+    { "type": "request", "text": ["can you contact", "sheet a mock", "story for me"], "source": "claude-code 29b9997b 2026-09-24T05:19:48Z" },
+    { "type": "work" },
+    { "type": "reply", "text": ["Here’s the mock", "story as a", "contact sheet"], "source": "the reply to 05:19:48" },
+    { "type": "correction", "text": ["we have to", "show actual", "messages"], "source": "claude-code 29b9997b 2026-09-24T05:36:39Z (first clause)" },
+    { "type": "work", "size": "short" },
+    { "type": "reply", "text": ["Here’s design", "pass v2"], "source": "the reply to 05:36:39" },
+    { "type": "praise", "text": "so cool", "source": "claude-code 29b9997b 2026-09-24T05:53:33Z (first words)" },
+    { "type": "request", "text": ["ok build", "please!"], "flight": "loop", "react": "excited", "source": "claude-code 29b9997b 2026-09-24T06:00:49Z (first words)" },
+    { "type": "work", "size": "long" },
+    { "type": "reply", "text": ["The film", "is built"], "source": "the reply to 06:00:49" },
+    { "type": "praise", "text": "this is amazing", "source": "claude-code 29b9997b 2026-09-24T06:49:23Z (a clause)" }
+  ]
+}
