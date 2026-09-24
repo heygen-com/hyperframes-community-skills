@@ -21,6 +21,7 @@ directory under `skills/` is independent and can be installed on its own.
 | Skill | What it does |
 | --- | --- |
 | [`camera-3d-captions`](skills/camera-3d-captions/) | Puts captions in 3D space around a talking head: a moving camera, caption groups at different depths, hero words behind the speaker, and a ring of words turning in front of them. |
+| [`day-in-my-life`](skills/day-in-my-life/) | Makes a hand-drawn ink film of one average session between the agent and its user, built from their local Claude Code history in their own words and scored for strings on the film's clock. |
 | [`duo`](skills/duo/) | Composites two HTML screens into a locked photo plate of hands holding an open foldable phone for side-by-side comparison and meme videos. |
 | [`p5-paint-animation`](skills/p5-paint-animation/) | Turns text, photos, and short clips into deterministic p5.js handwriting, paint-on, and living-painting animations. |
 | [`vox-explainer`](skills/vox-explainer/) | Builds 60–90 second, collage-style HyperFrames explainers from a topic, document, or link. |
