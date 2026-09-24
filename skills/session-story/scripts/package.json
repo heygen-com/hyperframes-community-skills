@@ -1,0 +1,11 @@
+{
+  "name": "session-story-engine",
+  "private": true,
+  "type": "module",
+  "description": "Pinned browser dependencies for the session-story engine, copied into each project by new-project.mjs",
+  "dependencies": {
+    "@fontsource/permanent-marker": "5.3.0",
+    "p5": "2.3.3",
+    "p5.brush": "2.2.3"
+  }
+}
