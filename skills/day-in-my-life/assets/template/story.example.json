@@ -1,0 +1,22 @@
+{
+  "example": true,
+  "about": "EXAMPLE ONLY: a fictional user so the pipeline can be smoke-tested. A real film replaces every line with the user's own receipts (see references/story.md) and sets approved: true only after the user said yes.",
+  "user": "sam",
+  "approved": false,
+  "chapters": [
+    { "type": "intro", "title": ["a day in my life", "as sam's agent"], "caption": "monday, 9:40", "command": "claude" },
+    { "type": "shelf", "caption": "first, the shelf", "note": "ALWAYS", "book": "CLAUDE.md",
+      "spines": ["tests before merge", "no force push", "small commits", "tabs not spaces", "ask before deleting", "keep the readme short"] },
+    { "type": "first-message", "caption": "a question, no hello", "lines": ["why does the login test only", "fail on ci?"], "sticky": "1 hello in 40 sessions" },
+    { "type": "watching", "caption": "reading the docs", "kind": "page", "title": "vitest docs" },
+    { "type": "diff", "caption": "editing", "file": "auth.test.ts", "stat": "+42 -17" },
+    { "type": "terminal", "caption": "running the tests", "commands": ["npm test"], "output": ["auth.test.ts", "session.test.ts"], "fail": "2 failed", "pass": "all passing" },
+    { "type": "knock", "caption": "a knock", "bubble": "status?" },
+    { "type": "notes", "caption": "notes. again", "notes": ["still flaky", "too many retries", "that broke signup"] },
+    { "type": "ship", "caption": "shipping", "label": "fix: mock the clock in auth tests", "status": "merged" },
+    { "type": "good-part", "caption": "the good part", "bubble": ["green. thank you"] },
+    { "type": "kept", "caption": "kept", "newBook": "mock the clock",
+      "spines": ["tests before merge", "no force push", "small commits", "ask before deleting"] },
+    { "type": "tag", "caption": "day 0", "command": "claude" }
+  ]
+}

@@ -1,0 +1,3 @@
+# score.py only (harvest.py is standard library). Tested versions:
+numpy==2.0.2
+scipy==1.13.1

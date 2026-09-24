@@ -1,0 +1,24 @@
+{
+  "about": "Single source of truth for the film clock. scenes.js draws every event at these times and scripts/score.py composes on them, so picture and music cannot drift. Times are seconds from the chapter start; every one sits on the 96 BPM grid (beat = 0.625 s, bar = 2.5 s). check = the moment that shows the chapter payload (for the design-pass sheet).",
+  "bpm": 96,
+  "beatsPerBar": 4,
+  "keysRel": [-1.25, -0.9375, -0.78125, -0.625, -0.3125, -0.15625],
+  "types": {
+    "intro": {"bars": 4, "out": "swallow", "events": {"write": [0.25, 3.1], "tilt": [3.75, 5.0], "caption": 5.0, "enter": 7.5, "push": [8.125, 10.0]}, "selfSwallow": true, "check": 7.9},
+    "shelf": {"bars": 2, "out": "wipe", "events": {"pin": 1.25, "turn": [2.5, 3.125]}, "check": 3.75},
+    "first-message": {"bars": 2, "out": "wipe", "events": {"lines": 0.3125, "lineStep": 0.3125, "hop": 2.5, "sticky": 3.125}, "check": 3.75},
+    "watching": {"bars": 2, "out": "wipe", "events": {"mute": 1.25}, "check": 3.75},
+    "frames": {"bars": 2, "out": "wipe", "events": {"tape": 1.25, "walk": [1.25, 2.5], "pause": [2.5, 2.8125], "walk2": [2.8125, 4.0625]}, "check": 2.625},
+    "building": {"bars": 2, "out": "wipe", "events": {"bubble": 0.3125, "paint": [1.25, 3.4375], "pages": [1.875, 2.5, 3.125]}, "check": 3.9},
+    "terminal": {"bars": 2, "out": "wipe", "events": {"type": 0.3125, "cps": 16, "enter": 1.875, "fail": 2.5, "fix": 3.125, "rerun": 3.75, "pass": 4.375}, "check": 4.6},
+    "diff": {"bars": 2, "out": "wipe", "events": {"strike": [1.25, 1.5625, 1.875], "write": [2.5, 3.4375], "stamp": 3.75}, "check": 4.1},
+    "restart": {"bars": 2, "out": "wipe", "events": {"bubble": 0.3125, "off": 1.25, "dots": [2.5, 2.8125, 3.125], "on": 3.75}, "check": 2.9},
+    "knock": {"bars": 2, "out": "wipe", "events": {"knocks": [0, 0.3125], "enter": 0.9375, "bubble": 1.875, "hop": 2.5, "show": 3.125}, "check": 3.75},
+    "notes": {"bars": 2, "out": "wipe", "events": {"drafts": [0.3125, 0.9375], "pins": [0.625, 1.25, 1.875, 2.5, 3.125], "cross": [3.4375, 3.75], "balls": [3.75, 4.0625, 4.375]}, "check": 4.5},
+    "ship": {"bars": 2, "out": "wipe", "events": {"seal": 1.25, "stamp": 1.875, "send": [2.5, 3.4375], "status": 3.75}, "check": 4.1},
+    "side-by-side": {"bars": 2, "out": "swallow", "events": {"bubble": 1.25, "hop": [1.875, 2.5], "snap": 3.125, "swallow": 3.75}, "selfSwallow": true, "check": 3.5},
+    "good-part": {"bars": 2, "out": "wipe", "events": {"bubble": 0.625, "breath": [1.25, 1.875], "tutti": 2.5}, "check": 3.4},
+    "kept": {"bars": 2.5, "out": "black", "events": {"fly": [0.625, 2.1875], "land": 2.5, "arrive": [2.5, 4.75], "lampOff": 5.0}, "check": 4.75},
+    "tag": {"bars": 2, "out": null, "events": {"enter": 2.5}, "check": 3.5}
+  }
+}
