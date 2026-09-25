@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en" data-resolution="square">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1080" />
+    <title>__TITLE__</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&display=block" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <script type="importmap">
+      { "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.181.2/build/three.module.js", "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.181.2/examples/jsm/" } }
+    </script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1080px; overflow: hidden; background: __BG__; }
+      #root { position: absolute; inset: 0; width: 1080px; height: 1080px; overflow: hidden; background: __BG__; }
+      #stage { position: absolute; inset: 0; width: 1080px; height: 1080px; display: block; }
+      #label { position: absolute; left: 60px; bottom: 58px; font-family: Inter, sans-serif; color: #2b3a4c; pointer-events: none; }
+      #label .kick { font-size: 15px; font-weight: 600; letter-spacing: 0.08em; color: #5a6f86; margin-bottom: 10px; }
+      #label .title { font-size: 46px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.05; }
+      #label .sub { font-size: 20px; font-weight: 500; color: #4a5d72; margin-top: 10px; font-variant-numeric: tabular-nums; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="__DUR__" data-width="1080" data-height="1080" data-fps="30">
+      <canvas id="stage" width="1080" height="1080" data-layout-allow-overflow></canvas>
+      <div id="label">
+        <div class="kick" data-layout-allow-occlusion>__KICKER__</div>
+        <div class="title" data-layout-allow-occlusion>__TITLE__</div>
+        <div class="sub" id="lab-count" data-layout-allow-occlusion>0 parts · 0 connections checked</div>
+      </div>
+    </div>
+    <script>
+      // root timeline: registered here; scene.js adds ONE full-length driver tween that renders the scene from time
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = gsap.timeline({ paused: true });
+    </script>
+    <script type="module" src="./scene.js"></script>
+  </body>
+</html>

@@ -1,0 +1,4 @@
+# python helpers (trace_object.py, project.py, shoot.sh contact sheets, motion_trace.py, make_fixture.py)
+Pillow==11.3.0
+numpy==2.0.2
+scipy==1.13.1
